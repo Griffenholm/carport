@@ -1,0 +1,187 @@
+@startuml
+!pragma layout smetana
+
+
+package "Entities" {
+
+class Salesperson {
+
+- int salespersonId
+- String name
+- String email
+- String password
+- boolean isAdmin
++ constructor()
++ getters()
++ setters()
+
+}
+
+class Customer {
+
+- int customerId
+- String name
+- String address
+- int zip
+- String city
+- int phoneNumber
+- String email
++ constructor()
++ getters()
++ setters()
+
+}
+
+
+class Order {
+
+- int orderId
+- int carportHeigth
+- int carportLength
+- int carportWidth
+- int shedLength
+- int shedWidth
+- int price
+- String status
+- LocalDate deliveryDate
+- Carport caport
+- Customer customer
+- Salesperson salesperson
++ constructor()
++ getters()
++ setters()
+
+}
+
+class Carport {
+- List<Material> materialList
+- int heigth
+- int length
+- int width
++ getListOfMaterials()
+
+
+
+}
+
+class Variant {
+
+- int variantId
+- int orderlineId
+- int materialId
+- int length
+- Material material
+
+}
+
+class Material {
+
+- int materialId
+- String name
+- String description
+- int price
+- String unit
+- int quantity
+- int width
+- int heigth
+
++ constructor()
++ getters()
++ setters()
+
+}
+
+}
+
+package "Controllers" {
+
+class OrderController {
+
++ addRoutes()
++ createOrder()
++ getOrderByUser()
++ getOrderById()
++ getAllOrders()
++ updateOrder()
++ deleteOrder()
+
+}
+
+class UserController {
+
++ addRoutes()
++ login()
++ logout()
++ createUser()
++ getAllUsers()
+
+}
+
+class MaterialController {
+
++ addRoutes()
++ getMaterialById()
++ getAllMaterial()
++ createNewMaterial()
++ updateMaterial()
++ deleteMaterial()
+
+}
+}
+
+package "Persistence" {
+
+class OrderMapper {
+
++ createOrder()
++ getOrdersByUser()
++ getOrdersById
++ getAllOrders()
++ updateOrder()
++ deleteOrder()
+
+}
+
+class MaterialMapper {
+
++ List<Material> getMaterial()
++ createMaterial()
++ getMaterial()
++ getAllMaterial()
++ getMaterialById()
++ updateMaterial()
++ deleteMaterial()
+
+}
+
+class UserMapper {
+
++ login()
++ createUser()
++ deleteUser()
++ getAllUsers()
+
+}
+}
+
+package "Services" {
+
+class SendGrid{
+
++ sendMail()
+
+}
+
+class SVG{}
+
+class SystemMotor{
+
++ variousCalcMethods()
+
+}
+
+
+}
+
+
+@enduml
