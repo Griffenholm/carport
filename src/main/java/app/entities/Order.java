@@ -1,0 +1,129 @@
+package app.entities;
+
+import java.time.LocalDate;
+
+public class Order {
+    int orderId;
+    int carportHeight;
+    int carportLength;
+    int carportWidth;
+    int shedLength;
+    int shedWidth;
+    int price;
+    String status;
+    LocalDate deliveryDate;
+    Carport carport;
+    Customer customer;
+    Salesperson salesperson;
+
+    public Order(int orderId, int carportHeight, int carportLength, int carportWidth, int shedLength, int shedWidth, int price, String status, LocalDate deliveryDate, Carport carport, Customer customer, Salesperson salesperson) {
+        this.orderId = orderId;
+        this.carportHeight = carportHeight;
+        this.carportLength = carportLength;
+        this.carportWidth = carportWidth;
+        this.shedLength = shedLength;
+        this.shedWidth = shedWidth;
+        this.price = price;
+        this.status = status;
+        this.deliveryDate = deliveryDate;
+        this.carport = carport;
+        this.customer = customer;
+        this.salesperson = salesperson;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getCarportHeight() {
+        return carportHeight;
+    }
+
+    public void setCarportHeight(int carportHeight) {
+        this.carportHeight = carportHeight;
+    }
+
+    public int getCarportLength() {
+        return carportLength;
+    }
+
+    public void setCarportLength(int carportLength) {
+        this.carportLength = carportLength;
+    }
+
+    public int getCarportWidth() {
+        return carportWidth;
+    }
+
+    public void setCarportWidth(int carportWidth) {
+        this.carportWidth = carportWidth;
+    }
+
+    public int getShedLength() {
+        return shedLength;
+    }
+
+    public void setShedLength(int shedLength) {
+        this.shedLength = shedLength;
+    }
+
+    public int getShedWidth() {
+        return shedWidth;
+    }
+
+    public void setShedWidth(int shedWidth) {
+        this.shedWidth = shedWidth;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDate getDeliveryDate() {
+        return deliveryDate;
+    }
+
+    public void setDeliveryDate(LocalDate deliveryDate) {
+        this.deliveryDate = deliveryDate;
+    }
+
+    public Carport getCarport() {
+        return carport;
+    }
+
+    public void setCarport(Carport carport) {
+        this.carport = carport;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Salesperson getSalesperson() {
+        return salesperson;
+    }
+
+    public void setSalesperson(Salesperson salesperson) {
+        this.salesperson = salesperson;
+    }
+}
