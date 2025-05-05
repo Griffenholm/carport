@@ -36,7 +36,7 @@ class Customer {
 class Order {
 
 - int orderId
-- int carportHeigth
+- int carportHeight
 - int carportLength
 - int carportWidth
 - int shedLength
@@ -44,7 +44,7 @@ class Order {
 - int price
 - String status
 - LocalDate deliveryDate
-- Carport caport
+- Carport carport
 - Customer customer
 - Salesperson salesperson
 + constructor()
@@ -55,7 +55,7 @@ class Order {
 
 class Carport {
 - List<Material> materialList
-- int heigth
+- int height
 - int length
 - int width
 + getListOfMaterials()
@@ -83,7 +83,7 @@ class Material {
 - String unit
 - int quantity
 - int width
-- int heigth
+- int height
 
 + constructor()
 + getters()
