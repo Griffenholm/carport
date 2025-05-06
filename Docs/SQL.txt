@@ -1,0 +1,175 @@
+BEGIN;
+
+-- THIS QUERY RESETS THE DATABASE TO A DEFAULT STATE, BE SURE THAT IS WHAT YOU WANT BEFORE YOU USE IT!!!
+
+-- Dropping all tables for a clean start
+
+DROP TABLE IF EXISTS public.customer CASCADE;
+DROP TABLE IF EXISTS public.orders CASCADE;
+DROP TABLE IF EXISTS public.orderline CASCADE;
+DROP TABLE IF EXISTS public.material CASCADE;
+DROP TABLE IF EXISTS public.city CASCADE;
+DROP TABLE IF EXISTS public.salesperson CASCADE;
+DROP TABLE IF EXISTS public.variant CASCADE;
+
+
+-- Creates the needed tables for the DB
+
+CREATE TABLE IF NOT EXISTS public.customer
+(
+    customer_id serial NOT NULL,
+    salesperson_id integer NOT NULL,
+    name character varying NOT NULL,
+    address character varying NOT NULL,
+    zip integer NOT NULL,
+    phone_number integer NOT NULL,
+    email character varying NOT NULL,
+    PRIMARY KEY (customer_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.orders
+(
+    order_id serial NOT NULL,
+    customer_id integer NOT NULL,
+    carport_height integer NOT NULL DEFAULT 230,
+    carport_width integer NOT NULL,
+    carport_length integer NOT NULL,
+    shed_width integer,
+    shed_length integer,
+    status character varying NOT NULL,
+    delivery_date date,
+    guide_id integer,
+    svg character varying,
+    order_price integer NOT NULL,
+    note character varying,
+    start_price integer NOT NULL,
+    PRIMARY KEY (order_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.orderline
+(
+    orderline_id serial NOT NULL,
+    order_id integer NOT NULL,
+    variant_id integer NOT NULL,
+    quantity integer NOT NULL,
+    build_description character varying NOT NULL,
+    orderline_price integer NOT NULL,
+    PRIMARY KEY (orderline_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.material
+(
+    material_id serial NOT NULL,
+    name character varying NOT NULL,
+    price integer NOT NULL,
+    description character varying,
+    unit character varying NOT NULL,
+    quantity integer,
+    width integer,
+    height integer,
+    PRIMARY KEY (material_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.city
+(
+    zip integer NOT NULL,
+    city_name character varying NOT NULL,
+    PRIMARY KEY (zip)
+);
+
+CREATE TABLE IF NOT EXISTS public.salesperson
+(
+    salesperson_id serial NOT NULL,
+    name character varying NOT NULL,
+    email character varying NOT NULL,
+    phone_number integer NOT NULL,
+    is_admin boolean NOT NULL,
+    password character varying NOT NULL,
+    PRIMARY KEY (salesperson_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.variant
+(
+    variant_id serial NOT NULL,
+    material_id integer NOT NULL,
+    length integer,
+    PRIMARY KEY (variant_id)
+);
+
+-- Adds contraints and foreignkeys to previously made tables
+
+ALTER TABLE IF EXISTS public.customer
+    ADD FOREIGN KEY (zip)
+    REFERENCES public.city (zip) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.customer
+    ADD FOREIGN KEY (salesperson_id)
+    REFERENCES public.salesperson (salesperson_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.orders
+    ADD FOREIGN KEY (customer_id)
+    REFERENCES public.customer (customer_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.orderline
+    ADD FOREIGN KEY (order_id)
+    REFERENCES public.orders (order_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+ALTER TABLE IF EXISTS public.orderline
+    ADD FOREIGN KEY (variant_id)
+    REFERENCES public.variant (variant_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+ALTER TABLE IF EXISTS public.variant
+    ADD FOREIGN KEY (material_id)
+    REFERENCES public.material (material_id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+    NOT VALID;
+
+
+/*
+
+-- Populates the tables with mock-startup data
+
+-- Inserts the admin and a salesperson
+
+INSERT INTO public.salesperson (name, email, phone_number, is_admin, password)
+VALUES  ('Amin Admin', 'admin@fogcarport.dk', 87654321, true, 'admin'),
+        ('Søren Sælger', 'sælger1@fogcarport.dk', 12345678, false, 'sælger');
+
+-- Inserts for wood
+
+INSERT INTO public.material (name, price, description, unit, width, height)
+VALUES  ('Trykimpreneret brædt', ???, 'Understernbrædt', 'stk', 200, 25),
+        ('Trykimpreneret brædt', ???, 'Oversternbrædt', 'stk', 125, 25),
+        ('Lægte ubehandlet', ???, 'Til z på bagside af dør??', 'stk', 73, 38 );
+
+-- Inserts for other materials
+
+INSERT INTO public.material (name, price, description, unit, quantity)
+VALUES ();
+
+-- Inserts for the variants of wood
+
+INSERT INTO public.variant ();
+
+*/
+
+COMMIT;
