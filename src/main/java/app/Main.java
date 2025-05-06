@@ -12,7 +12,7 @@ import io.javalin.rendering.template.JavalinThymeleaf;
 public class Main {
 
     private static final String USER = "postgres";
-    private static final String PASSWORD = "enilocin";
+    private static final String PASSWORD = "";
     private static final String URL = "jdbc:postgresql://165.22.66.96:5432/%s?currentSchema=public";
     private static final String DB = "fog";
 
