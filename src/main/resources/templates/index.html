@@ -38,7 +38,9 @@
 
                     Ved bestilling medfølger standardbyggevejledning og en tegning af din carport. Du kan bygge den selv
                     eller vi kan henvise til en dygtig håndværker.</p>
-                <p>Har du spørgsmål? Få hurtigt svar på: <strong>47 16 08 00</strong></p>
+                <br><br>
+                <p>Har du spørgsmål? Få hurtigt svar på: <p/>
+                <p><strong>47 16 08 00</strong></p>
             </div>
             <div class="intro-image">
                 <img src="/images/carport-index.png" alt="Eksempel på carport">
@@ -100,11 +102,18 @@
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
             </div>
-            <div class="skitse-section">
+            <div class="sketch-section">
                 <h2>Skitse</h2>
-                <button type="submit" name="updateSketch">Opdater skitse</button>
-                <img th:src="@{/images/skitse-side.jpg}" alt="Skitse fra siden">
-                <img th:src="@{/images/skitse-ovenfra.jpg}" alt="Skitse fra oven">
+                <form th:action="@{/update-sketch}" method="post">
+                    <button type="submit" name="updateSketch">
+                        Opdater skitse
+                        <img src="/images/update_icon.png" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                    </button>
+                </form>
+                <h3>Skitse fra siden</h3>
+                <img th:src="@{/images/sketch_sideview.png}" alt="Skitse fra siden">
+                <h3>Skitse fra oven</h3>
+                <img th:src="@{/images/sketch_topview.png}" alt="Skitse fra oven">
             </div>
             <div class="price-section">
                 <h2>Vejledende pris:</h2>
