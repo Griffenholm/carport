@@ -84,4 +84,18 @@ public class Material {
     public void setHeight(int height) {
         this.height = height;
     }
+
+    @Override
+    public String toString() {
+        return "Material{" +
+                "materialId=" + materialId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", unit='" + unit + '\'' +
+                ", quantity=" + quantity +
+                ", width=" + width +
+                ", height=" + height +
+                '}';
+    }
 }

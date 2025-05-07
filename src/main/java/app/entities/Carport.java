@@ -55,4 +55,15 @@ public class Carport {
     public void setAdmin(boolean admin) {
         isAdmin = admin;
     }
+
+    @Override
+    public String toString() {
+        return "Carport{" +
+                "salespersonId=" + salespersonId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", isAdmin=" + isAdmin +
+                '}';
+    }
 }
