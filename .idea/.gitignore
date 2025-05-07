@@ -7,7 +7,7 @@
 /dataSources/
 /dataSources.local.xml
 # Maven build directory
-target/
+/target/
 # Gradle build directory
 /build/
 # IntelliJ IDEA specific files
