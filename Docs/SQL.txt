@@ -18,26 +18,26 @@ DROP TABLE IF EXISTS public.variant CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.customer
 (
-    customer_id serial NOT NULL,
     salesperson_id integer NOT NULL,
     name character varying NOT NULL,
     address character varying NOT NULL,
     zip integer NOT NULL,
     phone_number integer NOT NULL,
     email character varying NOT NULL,
-    PRIMARY KEY (customer_id)
+    PRIMARY KEY (phone_number)
 );
 
 CREATE TABLE IF NOT EXISTS public.orders
 (
     order_id serial NOT NULL,
-    customer_id integer NOT NULL,
+    customer_number integer NOT NULL,
     carport_height integer NOT NULL DEFAULT 210,
     carport_width integer NOT NULL,
     carport_length integer NOT NULL,
     shed_width integer,
     shed_length integer,
     status character varying NOT NULL,
+    order_date date,
     delivery_date date,
     guide_id integer,
     svg character varying,
@@ -113,8 +113,8 @@ ALTER TABLE IF EXISTS public.customer
     NOT VALID;
 
 ALTER TABLE IF EXISTS public.orders
-    ADD FOREIGN KEY (customer_id)
-    REFERENCES public.customer (customer_id) MATCH SIMPLE
+    ADD FOREIGN KEY (customer_number)
+    REFERENCES public.customer (phone_number) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
@@ -147,6 +147,18 @@ ALTER TABLE IF EXISTS public.variant
 -- To get the original price back (the public salesprice) simply do: Price x (1 / 0.3)
 -- (This will be used for all logic when showing prices to the customer!)
 -- Prices for wood and the rooftiles are kr/cm, while the prices for the other materials are kr/unit
+
+
+-- Inserts for a few cities to use
+
+INSERT INTO public.zip (zip, city_name)
+VALUES  (3400, 'Hillerød'),
+        (4000, "Roskilde"),
+        (4600, 'Køge'),
+        (2800, "Lyngby"),
+        (3000, "Helsingør"),
+        (3600, "Frederikssund"),
+        (4200, "Slagelse");
 
 
 -- Inserts the admin and a salesperson
