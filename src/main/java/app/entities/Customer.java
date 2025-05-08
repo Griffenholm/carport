@@ -74,4 +74,17 @@ public class Customer {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "customerId=" + customerId +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", zip=" + zip +
+                ", city='" + city + '\'' +
+                ", phoneNumber=" + phoneNumber +
+                ", email='" + email + '\'' +
+                '}';
+    }
 }

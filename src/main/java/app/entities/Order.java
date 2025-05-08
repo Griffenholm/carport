@@ -126,4 +126,22 @@ public class Order {
     public void setSalesperson(Salesperson salesperson) {
         this.salesperson = salesperson;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", carportHeight=" + carportHeight +
+                ", carportLength=" + carportLength +
+                ", carportWidth=" + carportWidth +
+                ", shedLength=" + shedLength +
+                ", shedWidth=" + shedWidth +
+                ", price=" + price +
+                ", status='" + status + '\'' +
+                ", deliveryDate=" + deliveryDate +
+                ", carport=" + carport +
+                ", customer=" + customer +
+                ", salesperson=" + salesperson +
+                '}';
+    }
 }

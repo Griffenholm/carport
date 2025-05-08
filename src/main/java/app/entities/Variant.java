@@ -54,4 +54,15 @@ public class Variant {
     public void setMaterial(Material material) {
         this.material = material;
     }
+
+    @Override
+    public String toString() {
+        return "Variant{" +
+                "variantId=" + variantId +
+                ", orderlineId=" + orderlineId +
+                ", materialId=" + materialId +
+                ", length=" + length +
+                ", material=" + material +
+                '}';
+    }
 }
