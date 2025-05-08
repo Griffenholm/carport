@@ -159,13 +159,13 @@ VALUES  ('Amin Admin', 'admin@fogcarport.dk', 87654321, true, 'admin'),
 -- Inserts for wood
 
 INSERT INTO public.material (material_id, name, price, unit, width, height)
-VALUES  (1, '25x200mm. Trykimprægneret brædt', 0.17, 'stk', 200, 25),
-        (2, '25x125mm. Trykimprægneret brædt', 0.10, 'stk', 125, 25),
+VALUES  (1, '25x200mm. Trykimprægneret bræt', 0.17, 'stk', 200, 25),
+        (2, '25x125mm. Trykimprægneret bræt', 0.10, 'stk', 125, 25),
         (3, '38x73mm. Lægte ubehandlet', 0.05, 'stk', 73, 38 ),
         (4, '45x95mm. Reglar ubehandlet', 0.05, 'stk', 95, 45),
         (5, '45x195mm. Spærtræ ubehandlet', 0.16, 'stk', 195, 45),
         (6, '97x97mm. Trykimprægneret stolpe', 0.22, 'stk', 97, 97),
-        (7, '19x100mm. Trykimprægneret brædt', 0.05, 'stk', 100, 19);
+        (7, '19x100mm. Trykimprægneret bræt', 0.05, 'stk', 100, 19);
 
 
 -- Inserts for tiles and other materials
