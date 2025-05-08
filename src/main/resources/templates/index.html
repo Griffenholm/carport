@@ -14,7 +14,7 @@
         <div class="container header-content">
             <div class="header-logo">
                 <a href="/" th:href="@{/}">
-                    <img src="/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
+                    <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
                 </a>
             </div>
             <nav>
@@ -22,8 +22,6 @@
             </nav>
         </div>
     </header>
-
-
 </div>
 
 <main>
@@ -43,7 +41,7 @@
                 <p><strong>47 16 08 00</strong></p>
             </div>
             <div class="intro-image">
-                <img src="/images/carport-index.png" alt="Eksempel på carport">
+                <img src="../public/images/carport-index.png" th:src="@{/images/carport-index.png}" alt="Eksempel på carport">
             </div>
         </section>
         <form th:action="@{/order}" method="post">
@@ -106,13 +104,13 @@
                 <form th:action="@{/update-sketch}" method="post">
                     <button type="submit" name="updateSketch">
                         Opdater skitse
-                        <img src="/images/update_icon.png" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                        <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
                     </button>
                 </form>
                 <h3>Skitse fra siden</h3>
-                <img th:src="@{/images/sketch_sideview.png}" alt="Skitse fra siden">
+                <img src="../public/images/sketch_sideview.png" th:src="@{/images/sketch_sideview.png}" alt="Skitse fra siden">
                 <h3>Skitse fra oven</h3>
-                <img th:src="@{/images/sketch_topview.png}" alt="Skitse fra oven">
+                <img src="../public/images/sketch_topview.png" th:src="@{/images/sketch_topview.png}" alt="Skitse fra oven">
             </div>
             <div class="price-section">
                 <h2>Vejledende pris:</h2>

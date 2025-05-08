@@ -46,6 +46,11 @@ form {
 .form-section h2 {
     margin-bottom: 8px;
 }
+.form-subsection label {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
 label {
     display: flex;
     flex-direction: column;
