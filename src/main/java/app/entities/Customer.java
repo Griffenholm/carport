@@ -1,7 +1,6 @@
 package app.entities;
 
 public class Customer {
-    int customerId;
     String name;
     String address;
     int zip;
@@ -9,22 +8,13 @@ public class Customer {
     int phoneNumber;
     String email;
 
-    public Customer(int customerId, String name, String address, int zip, String city, int phoneNumber, String email) {
-        this.customerId = customerId;
+    public Customer(String name, String address, int zip, String city, int phoneNumber, String email) {
         this.name = name;
         this.address = address;
         this.zip = zip;
         this.city = city;
         this.phoneNumber = phoneNumber;
         this.email = email;
-    }
-
-    public int getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
     }
 
     public String getName() {
@@ -78,7 +68,6 @@ public class Customer {
     @Override
     public String toString() {
         return "Customer{" +
-                "customerId=" + customerId +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", zip=" + zip +

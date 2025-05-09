@@ -1,69 +1,54 @@
 package app.entities;
 
+import java.util.List;
+
 public class Carport {
+ List<Material> materialList;
+ int height;
+ int length;
+ int width;
 
-    int salespersonId;
-    String name;
-    String email;
-    String password;
-    boolean isAdmin;
-
-    public Carport(int salespersonId, String name, String email, String password, boolean isAdmin) {
-        this.salespersonId = salespersonId;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.isAdmin = isAdmin;
+    public Carport(int height, int length, int width) {
+        this.height = height;
+        this.length = length;
+        this.width = width;
     }
 
-    public int getSalespersonId() {
-        return salespersonId;
+    public List<Material> getMaterialList() {
+        return materialList;
     }
 
-    public void setSalespersonId(int salespersonId) {
-        this.salespersonId = salespersonId;
+    public int getHeight() {
+        return height;
     }
 
-    public String getName() {
-        return name;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public int getLength() {
+        return length;
     }
 
-    public String getEmail() {
-        return email;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public int getWidth() {
+        return width;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     @Override
     public String toString() {
         return "Carport{" +
-                "salespersonId=" + salespersonId +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", isAdmin=" + isAdmin +
+                "materialList=" + materialList +
+                ", height=" + height +
+                ", length=" + length +
+                ", width=" + width +
                 '}';
     }
 }

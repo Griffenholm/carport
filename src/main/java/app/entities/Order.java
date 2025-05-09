@@ -16,6 +16,9 @@ public class Order {
     Customer customer;
     Salesperson salesperson;
 
+    // Empty constructor (necessary for Javalin form-binding)
+    public Order() {}
+
     public Order(int orderId, int carportHeight, int carportLength, int carportWidth, int shedLength, int shedWidth, int price, String status, LocalDate deliveryDate, Carport carport, Customer customer, Salesperson salesperson) {
         this.orderId = orderId;
         this.carportHeight = carportHeight;

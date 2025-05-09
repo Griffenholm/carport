@@ -27,8 +27,11 @@ public class Main {
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(7070);
 
-        // Routing
+        // Routing to customer index page
         app.get("/", ctx -> ctx.render("index.html"));
-        // UserController.addRoutes(app, connectionPool);
+
+        // Add OrderController routes
+        OrderController orderController = new OrderController(connectionPool);
+        orderController.addRoutes(app);
     }
 }

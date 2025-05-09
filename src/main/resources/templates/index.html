@@ -44,8 +44,8 @@
                 <img src="../public/images/carport-index.png" th:src="@{/images/carport-index.png}" alt="Eksempel på carport">
             </div>
         </section>
-        <form th:action="@{/order}" method="post">
-            <div class="form-section">
+        <form th:action="@{/order}" th:object="${customer}" method="post">
+        <div class="form-section">
                 <h2>Carport</h2>
                 <label>Carport bredde
                     <input type="number" th:field="*{carportWidth}" placeholder="Angiv bredde i cm" required />
@@ -89,12 +89,12 @@
 
             <div class="form-section">
                 <h2>Kontaktoplysninger</h2>
-                <input type="text" name="name" placeholder="Navn" required>
-                <input type="text" name="address" placeholder="Adresse" required>
-                <input type="text" name="zipcode" placeholder="Postnummer" required>
-                <input type="text" name="city" placeholder="By" required>
-                <input type="tel" name="phone" placeholder="Telefonnummer" required>
-                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" th:field="*{name}" placeholder="Navn" required>
+                <input type="text" th:field="*{address}" placeholder="Adresse" required>
+                <input type="text" th:field="*{zip}" placeholder="Postnummer" required>
+                <input type="text" th:field="*{city}" placeholder="By" required>
+                <input type="tel" th:field="*{phoneNumber}" placeholder="Telefonnummer" required>
+                <input type="email" th:field="*{email}" placeholder="Email" required>
             </div>
             <div class="sketch-section">
                 <h2>Skitse</h2>
