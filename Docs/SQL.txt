@@ -151,14 +151,14 @@ ALTER TABLE IF EXISTS public.variant
 
 -- Inserts for a few cities to use
 
-INSERT INTO public.zip (zip, city_name)
+INSERT INTO public.city (zip, city_name)
 VALUES  (3400, 'Hillerød'),
-        (4000, "Roskilde"),
+        (4000, 'Roskilde'),
         (4600, 'Køge'),
-        (2800, "Lyngby"),
-        (3000, "Helsingør"),
-        (3600, "Frederikssund"),
-        (4200, "Slagelse");
+        (2800, 'Lyngby'),
+        (3000, 'Helsingør'),
+        (3600, 'Frederikssund'),
+        (4200, 'Slagelse');
 
 
 -- Inserts the admin and a salesperson
