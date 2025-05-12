@@ -3,18 +3,18 @@ package app.entities;
 import java.time.LocalDate;
 
 public class Order {
-    int orderId;
-    int carportHeight;
-    int carportLength;
-    int carportWidth;
-    int shedLength;
-    int shedWidth;
-    int price;
-    String status;
-    LocalDate deliveryDate;
-    Carport carport;
-    Customer customer;
-    Salesperson salesperson;
+    private int orderId;
+    private int carportHeight;
+    private int carportLength;
+    private int carportWidth;
+    private int shedLength;
+    private int shedWidth;
+    private int price;
+    private String status;
+    private LocalDate deliveryDate;
+    private Carport carport;
+    private Customer customer;
+    private Salesperson salesperson;
 
     // Empty constructor (necessary for Javalin form-binding)
     public Order() {}

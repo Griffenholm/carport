@@ -1,11 +1,87 @@
 package app.persistence;
 
+import app.entities.City;
 import app.entities.Customer;
+import app.entities.Salesperson;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserMapper {
+
+    private final ConnectionPool connectionPool;
+
     public UserMapper(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
-    public void saveUser(Customer customer) {
+    public void saveUser(Customer customer) throws SQLException {
+
+        // Add salesperson to order
+        Salesperson salesperson = assignSalesperson();
+        customer.setSalesperson(salesperson);
+
+        // Save customer
+        String sql = """
+        INSERT INTO customer (salesperson_id, name, address, zip, phone_number, email) 
+        VALUES (?, ?, ?, ?, ?, ?)
+        """;
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, salesperson.getSalespersonId());
+            ps.setString(2, customer.getName());
+            ps.setString(3, customer.getAddress());
+            ps.setInt(4, customer.getZip());
+            ps.setInt(5, customer.getPhoneNumber());
+            ps.setString(6, customer.getEmail());
+            ps.executeUpdate();
+        }
     }
+
+    public Salesperson assignSalesperson() throws SQLException {
+        String sql = """
+    SELECT s.salesperson_id, s.name, s.email, s.password, s.is_admin
+    FROM salesperson s
+    LEFT JOIN customer c ON c.salesperson_id = s.salesperson_id
+    LEFT JOIN orders o ON c.phone_number = o.customer_id
+    WHERE o.status = 'Ny ordre' OR o.status IS NULL
+    GROUP BY s.salesperson_id, s.name, s.email, s.password, s.is_admin
+    ORDER BY COUNT(DISTINCT o.order_id) ASC
+    LIMIT 1;
+    """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                int salespersonId = rs.getInt("salesperson_id");
+                String name = rs.getString("name");
+                String email = rs.getString("email");
+                String password = rs.getString("password");
+                boolean isAdmin = rs.getBoolean("is_admin");
+
+                // Returner den salesperson med færrest aktive kunder
+                return new Salesperson(salespersonId, name, email, password, isAdmin);
+            }
+        }
+
+        throw new IllegalStateException("Ingen sælgere tilgængelige.");
+    }
+    public City getCityByZip(int zip) throws SQLException {
+        String sql = "SELECT zip, city_name FROM city WHERE zip = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, zip);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new City(rs.getInt("zip"), rs.getString("city_name"));
+                }
+            }
+        }
+        return null;
+    }
+
+
 }

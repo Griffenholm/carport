@@ -6,6 +6,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+    <script>
+        function fetchCity(zipInput) {
+            const zip = zipInput.value;
+            const cityField = document.getElementById("city");
+            const zipError = document.getElementById("zip-error");
+
+            if (zip.length === 4) {
+                fetch(`/city/${zip}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.cityName) {
+                            cityField.value = data.cityName;
+                            zipError.textContent = ""; // Fjern fejlmeddelelse
+                        } else {
+                            cityField.value = "";
+                            zipError.textContent = "Postnummeret findes ikke i databasen.";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Fejl ved hentning af bynavn:", error);
+                        zipError.textContent = "Postnummeret er ikke gyldigt.";
+                    });
+            } else {
+                cityField.value = "";
+                zipError.textContent = ""; // Fjern fejlmeddelelse ved kortere eller tomt input
+            }
+        }
+    </script>
+
+
 </head>
 
 <body>
@@ -44,14 +74,20 @@
                 <img src="../public/images/carport-index.png" th:src="@{/images/carport-index.png}" alt="Eksempel på carport">
             </div>
         </section>
-        <form th:action="@{/order}" th:object="${customer}" method="post">
-        <div class="form-section">
+
+        <!-- Order Form -->
+        <form th:action="@{/order}" method="post">
+            <!-- Carport Section -->
+            <div class="form-section">
                 <h2>Carport</h2>
                 <label>Carport bredde
-                    <input type="number" th:field="*{carportWidth}" placeholder="Angiv bredde i cm" required />
+                    <input type="number" th:field="*{carportWidth}" placeholder="Angiv bredde i cm" required/>
                 </label>
                 <label>Carport længde
-                    <input type="number" th:field="*{carportLength}" placeholder="Angiv længde i cm" required />
+                    <input type="number" th:field="*{carportLength}" placeholder="Angiv længde i cm" required/>
+                </label>
+                <label>Carport højde
+                    <input type="number" name="carportHeight" value="230" readonly/>
                 </label>
                 <label>Tagtype
                     <select th:field="*{roofType}">
@@ -60,14 +96,16 @@
                 </label>
                 <label>Tagbeklædning
                     <select th:field="*{roofMaterial}">
-                        <option th:each="option : ${roofMaterialOptions}" th:value="${option}" th:text="${option}"></option>
+                        <option th:each="option : ${roofMaterialOptions}" th:value="${option}"
+                                th:text="${option}"></option>
                     </select>
                 </label>
                 <label>Taghældning
-                    <input type="number" th:field="*{roofSlope}" placeholder="Angiv taghældning i grader" required />
+                    <input type="number" th:field="*{roofSlope}" placeholder="Angiv taghældning i grader" required/>
                 </label>
             </div>
 
+            <!-- Shed Section -->
             <div class="form-section">
                 <h2>Skur</h2>
                 <label>Redskabsrum
@@ -79,36 +117,39 @@
 
                 <div id="shedFields" class="form-subsection" style="display: none;">
                     <label>Redskabsrum bredde
-                        <input type="number" th:field="*{shedWidth}" placeholder="Angiv bredde i cm" />
+                        <input type="number" th:field="*{shedWidth}" placeholder="Angiv bredde i cm"/>
                     </label>
                     <label>Redskabsrum længde
-                        <input type="number" th:field="*{shedLength}" placeholder="Angiv længde i cm" />
+                        <input type="number" th:field="*{shedLength}" placeholder="Angiv længde i cm"/>
                     </label>
                 </div>
             </div>
 
+            <!-- Customer Section -->
             <div class="form-section">
                 <h2>Kontaktoplysninger</h2>
                 <input type="text" th:field="*{name}" placeholder="Navn" required>
                 <input type="text" th:field="*{address}" placeholder="Adresse" required>
-                <input type="text" th:field="*{zip}" placeholder="Postnummer" required>
-                <input type="text" th:field="*{city}" placeholder="By" required>
+                <label>Postnummer
+                    <input type="text" th:field="*{zip}" placeholder="Postnummer" required oninput="fetchCity(this)">
+                    <span id="zip-error" style="color: red;"></span>
+                </label>
+                <input type="text" id="city" name="city" placeholder="By" readonly required>
                 <input type="tel" th:field="*{phoneNumber}" placeholder="Telefonnummer" required>
                 <input type="email" th:field="*{email}" placeholder="Email" required>
             </div>
             <div class="sketch-section">
                 <h2>Skitse</h2>
-                <form th:action="@{/update-sketch}" method="post">
-                    <button type="submit" name="updateSketch">
-                        Opdater skitse
-                        <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
-                    </button>
-                </form>
+                <button type="button" name="updateSketch">
+                    Opdater skitse
+                    <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                </button>
                 <h3>Skitse fra siden</h3>
                 <img src="../public/images/sketch_sideview.png" th:src="@{/images/sketch_sideview.png}" alt="Skitse fra siden">
                 <h3>Skitse fra oven</h3>
                 <img src="../public/images/sketch_topview.png" th:src="@{/images/sketch_topview.png}" alt="Skitse fra oven">
             </div>
+
             <div class="price-section">
                 <h2>Vejledende pris:</h2>
                 <p>
@@ -131,18 +172,6 @@
         <p>CVR-nr. 16314439</p>
     </div>
 </footer>
-<script>
-    function toggleShedFields() {
-        const shedToggle = document.getElementById('shedToggle');
-        const shedFields = document.getElementById('shedFields');
-        shedFields.style.display = shedToggle.value === 'with' ? 'block' : 'none';
-    }
-
-    // Kald funktionen én gang ved load hvis brugeren har valgt det før
-    window.addEventListener("DOMContentLoaded", function() {
-        toggleShedFields();
-    });
-</script>
 
 </body>
 </html>

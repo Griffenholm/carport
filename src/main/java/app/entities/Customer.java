@@ -1,12 +1,13 @@
 package app.entities;
 
 public class Customer {
-    String name;
-    String address;
-    int zip;
-    String city;
-    int phoneNumber;
-    String email;
+    private String name;
+    private String address;
+    private int zip;
+    private String city;
+    private int phoneNumber;
+    private String email;
+    private Salesperson salesperson;
 
     public Customer(String name, String address, int zip, String city, int phoneNumber, String email) {
         this.name = name;
@@ -21,59 +22,44 @@ public class Customer {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getAddress() {
         return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public int getZip() {
         return zip;
     }
 
-    public void setZip(int zip) {
-        this.zip = zip;
-    }
-
     public String getCity() {
         return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
     }
 
     public int getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public Salesperson getSalesperson() {
+        return salesperson;
+    }
+
+    public void setSalesperson(Salesperson salesperson) {
+        this.salesperson = salesperson;
     }
 
     @Override
     public String toString() {
         return "Customer{" +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", zip=" + zip +
                 ", city='" + city + '\'' +
                 ", phoneNumber=" + phoneNumber +
                 ", email='" + email + '\'' +
+                ", salesperson=" + salesperson +
                 '}';
     }
 }
