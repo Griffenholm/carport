@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin – Ordrer</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png"/>
+    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="container header-content">
+            <div class="header-logo">
+                <a href="/" th:href="@{/}">
+                    <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
+                </a>
+            </div>
+            <nav>
+                <a th:href="@{/admin/orders}">Ordrer</a>
+            </nav>
+            <div class="header-logout" style="margin-left:auto;">
+                <a th:href="@{/logout}">Log ud</a>
+            </div>
+        </div>
+    </header>
+</div>
+
+<main>
+    <div class="container">
+        <h1>Hej <span th:text="${adminName}">Admin Name</span></h1>
+        <section class="orders-section">
+            <!-- Sub-heading + search -->
+            <div class="orders-header"
+                 style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
+                <h2>
+                    Kunder
+                    (<span th:text="${orders.size()}">0</span>)
+                </h2>
+                <form th:action="@{/admin/orders}" method="get"
+                      class="search-form"
+                      style="display:flex; align-items:center; gap:0.5rem;">
+                    <input type="search" name="search" placeholder="Søg"/>
+                    <button type="submit">🔍</button>
+                </form>
+            </div>
+
+            <!-- Filters -->
+            <div class="orders-filters"
+                 style="display:flex; align-items:center; gap:2rem; margin-bottom:1rem;">
+                <label>
+                    Status (alle)
+                    <select th:field="*{statusFilter}">
+                        <option value="">Alle</option>
+                        <option th:each="opt : ${statusOptions}"
+                                th:value="${opt}"
+                                th:text="${opt}">[status]</option>
+                    </select>
+                </label>
+
+                <label>
+                    Sælger (alle)
+                    <select th:field="*{sellerFilter}">
+                        <option value="">Alle</option>
+                        <option th:each="opt : ${sellerOptions}"
+                                th:value="${opt}"
+                                th:text="${opt}">[seller]</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- Orders table -->
+            <table class="orders-table">
+                <thead>
+                <tr>
+                    <th><!-- bullet --></th>
+                    <th>Status</th>
+                    <th>Sælger</th>
+                    <th>Dato</th>
+                    <th>Ordernr.</th>
+                    <th>Kunde</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td>
+        <span class="status-indicator"
+              th:style="|color: ${order.color}|">
+          •
+        </span>
+                    </td>
+                    <td th:text="${order.status}">Status</td>
+                    <td th:text="${order.seller}">Seller</td>
+                    <td th:text="${#dates.format(order.date, 'dd/MM/yyyy')}">01/01/2025</td>
+                    <td th:text="${order.id}">0000</td>
+                    <td th:text="${order.customerName}">Customer</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div class="container footer-container">
+        <p>Johannes Fog A/S</p>
+        <p>Firskovvej 20</p>
+        <p>2800 Lyngby</p>
+        <p>CVR-nr. 16314439</p>
+    </div>
+</footer>
+</body>
+</html>
