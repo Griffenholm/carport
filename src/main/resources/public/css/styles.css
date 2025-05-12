@@ -173,3 +173,24 @@ footer {
     padding: 0 20px;
     text-align: left;
 }
+
+/* Admin Orders Table */
+
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+    padding: 12px 8px;       /* space inside each cell */
+    text-align: left;        /* all text flush to the left */
+    vertical-align: middle;  /* center rows vertically */
+    border-bottom: 1px solid #ddd;
+}
+
+.orders-table th:first-child,
+.orders-table td:first-child {
+    width: 40px;             /* reserve room for the status bullet */
+    text-align: center;      /* center the bullet */
+}
