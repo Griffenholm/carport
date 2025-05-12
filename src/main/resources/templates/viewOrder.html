@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FOG carport bestilling</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container">
+    <header>
+        <div class="container header-content">
+            <div class="header-logo">
+                <a href="/" th:href="@{/}">
+                    <img src="/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
+                </a>
+            </div>
+            <nav>
+                <a href="/">Bestil byg-selv carport</a>
+            </nav>
+        </div>
+    </header>
+
+
+</div>
+
+<main>
+    <div class="container">
+        <section class="intro-with-image">
+            <div class="intro-text">
+                <h1>Lad os tegne din carportdrøm - bestil et tilbud her</h1>
+                <p>Med et specialudviklet computerprogram kan vi lynhurtigt beregne en vejledende pris og udskrive en
+                    skitsetegning med dine mål på en carport.
+                    Når du indsender en anmodning tjekker en af vores dygtige specialister din carport igennem for at se
+                    om vi kan forbedre noget. Du vil blive kontaktet så snart som muligt, og indenfor 2 hverdage.
+
+                    Ved bestilling medfølger standardbyggevejledning og en tegning af din carport. Du kan bygge den selv
+                    eller vi kan henvise til en dygtig håndværker.</p>
+                <br><br>
+                <p>Har du spørgsmål? Få hurtigt svar på: <p/>
+                <p><strong>47 16 08 00</strong></p>
+            </div>
+            <div class="intro-image">
+                <img src="/images/carport-index.png" alt="Eksempel på carport">
+            </div>
+        </section>
+        <form th:action="@{/order}" method="post">
+            <div class="form-section">
+                <h2>Carport</h2>
+                <label>Carport bredde
+                    <select th:field="*{carportWidth}">
+                        <option th:each="option : ${widthOptions}" th:value="${option}" th:text="${option}"></option>
+                    </select>
+                </label>
+                <label>Carport længde
+                    <select th:field="*{carportLength}">
+                        <option th:each="option : ${lengthOptions}" th:value="${option}" th:text="${option}"></option>
+                    </select>
+                </label>
+                <label>Tagtype
+                    <select th:field="*{roofType}">
+                        <option th:each="option : ${roofTypeOptions}" th:value="${option}" th:text="${option}"></option>
+                    </select>
+                </label>
+                <label>Tagbeklædning
+                    <select th:field="*{roofMaterial}">
+                        <option th:each="option : ${roofMaterialOptions}" th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </label>
+                <label>Taghældning
+                    <select th:field="*{roofSlope}">
+                        <option th:each="option : ${roofSlopeOptions}" th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-section">
+                <h2>Skur</h2>
+                <label>Redskabsrum bredde
+                    <select th:field="*{shedWidth}">
+                        <option th:each="option : ${shedWidthOptions}" th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </label>
+                <label>Redskabsrum længde
+                    <select th:field="*{shedLength}">
+                        <option th:each="option : ${shedLengthOptions}" th:value="${option}"
+                                th:text="${option}"></option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-section">
+                <h2>Kontaktoplysninger</h2>
+                <input type="text" name="name" placeholder="Navn" required>
+                <input type="text" name="address" placeholder="Adresse" required>
+                <input type="text" name="zipcode" placeholder="Postnummer" required>
+                <input type="text" name="city" placeholder="By" required>
+                <input type="tel" name="phone" placeholder="Telefonnummer" required>
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="sketch-section">
+                <h2>Skitse</h2>
+                <form th:action="@{/update-sketch}" method="post">
+                    <button type="submit" name="updateSketch">
+                        Opdater skitse
+                        <img src="/images/update_icon.png" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                    </button>
+                </form>
+                <h3>Skitse fra siden</h3>
+                <img th:src="@{/images/sketch_sideview.png}" alt="Skitse fra siden">
+                <h3>Skitse fra oven</h3>
+                <img th:src="@{/images/sketch_topview.png}" alt="Skitse fra oven">
+            </div>
+            <div class="price-section">
+                <h2>Vejledende pris:</h2>
+                <p>
+                    <strong th:text="${price != null} ? ${price + ' kr'} : 'Indtast mål for at få din pris'"></strong>
+                </p>
+                <p>Når du bestiller et tilbud kigger vores specialister med over 25 års erfaring din carport igennem og
+                    kontakter dig med et endeligt tilbud som du skal godkende. Dernæst sender vi dig din helt nye
+                    carport.</p>
+                <button type="submit" name="submitOrder">Bestil tilbud</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <div class="container footer-container">
+        <p>Johannes Fog A/S</p>
+        <p>Firskovvej 20</p>
+        <p>2800 Lyngby</p>
+        <p>CVR-nr. 16314439</p>
+    </div>
+</footer>
+</body>
+</html>
