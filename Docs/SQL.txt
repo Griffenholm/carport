@@ -151,14 +151,14 @@ ALTER TABLE IF EXISTS public.variant
 
 -- Inserts for a few cities to use
 
-INSERT INTO public.zip (zip, city_name)
+INSERT INTO public.city (zip, city_name)
 VALUES  (3400, 'Hillerød'),
-        (4000, "Roskilde"),
+        (4000, 'Roskilde'),
         (4600, 'Køge'),
-        (2800, "Lyngby"),
-        (3000, "Helsingør"),
-        (3600, "Frederikssund"),
-        (4200, "Slagelse");
+        (2800, 'Lyngby'),
+        (3000, 'Helsingør'),
+        (3600, 'Frederikssund'),
+        (4200, 'Slagelse');
 
 
 -- Inserts the admin and a salesperson
@@ -183,7 +183,7 @@ VALUES  (1, '25x200mm. Trykimprægneret bræt', 0.17, 'stk', 200, 25),
 -- Inserts for tiles and other materials
 
 INSERT INTO public.material (material_id, name, price, unit)
-VALUES  (8, 'Plastmo Ecolite blåtonet', 0.18, 'stk'),
+VALUES  (8, 'Plastmo Ecolite blåtonet tagplade', 0.18, 'stk'),
         (9, 'Plastmo bundskruer 200stk', 128.7, 'pakke'),
         (10, 'Hulbånd 1x20mm. 10mtr.', 89.7, 'rulle'),
         (11, 'Universal beslag 190mm. højre', 14.99, 'stk'),
