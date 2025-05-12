@@ -12,6 +12,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public class OrderController {
 
@@ -37,6 +38,20 @@ public class OrderController {
                 ctx.redirect("/");
             }
         });
+
+        app.get("/", ctx -> {
+            try {
+                List<String> roofMaterialOptions = carportMapper.getRoofMaterials();
+                List<String> roofTypeOptions = List.of("Flat roof");  // Hardcoded for now
+
+                ctx.attribute("roofMaterialOptions", roofMaterialOptions);
+                ctx.attribute("roofTypeOptions", roofTypeOptions);
+                ctx.render("index.html");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                ctx.status(500).result("Error retrieving roof materials.");
+            }
+        });
     }
 
     private void handleOrder(Context ctx) {
@@ -44,56 +59,63 @@ public class OrderController {
             // Receive customer data from the form
             String name = ctx.formParam("name");
             String address = ctx.formParam("address");
-            int zip = Integer.parseInt(ctx.formParam("zipcode"));
+            int zip = Integer.parseInt(ctx.formParam("zip"));
             String cityName = ctx.formParam("city");
-            int phone = Integer.parseInt(ctx.formParam("phone"));
+            int phone = Integer.parseInt(ctx.formParam("phoneNumber"));
             String email = ctx.formParam("email");
 
-            // Validate city-zip combination
-            if (cityName == null || cityName.trim().isEmpty()) {
-                ctx.result("Postnummer og by passer ikke sammen.");
-                return;
-            }
-
-            // Create customer
+            // Create customer and save to database
             Customer customer = new Customer(name, address, zip, cityName, phone, email);
             userMapper.saveUser(customer);
 
             // Receive carport data from the form
             int carportWidth = Integer.parseInt(ctx.formParam("carportWidth"));
             int carportLength = Integer.parseInt(ctx.formParam("carportLength"));
-            int carportHeight = Integer.parseInt(ctx.formParam("carportHeight"));  // Default 230
-            String roofType = ctx.formParam("roofType");
-            String roofMaterial = ctx.formParam("roofMaterial");
-            int roofSlope = Integer.parseInt(ctx.formParam("roofSlope"));
-
-            // Create carport
+            int carportHeight = Integer.parseInt(ctx.formParam("carportHeight"));
             Carport carport = new Carport(carportHeight, carportLength, carportWidth);
-            carport.setRoofType(roofType);
-            carport.setRoofMaterial(roofMaterial);
-            carport.setRoofSlope(roofSlope);
+
+            // Check for optional shed
+            String shedToggle = ctx.formParam("shedToggle");
+            if ("with".equals(shedToggle)) {
+                String shedWidthParam = ctx.formParam("shedWidth");
+                String shedLengthParam = ctx.formParam("shedLength");
+
+                // Only add shed if both fields are filled
+                if (shedWidthParam != null && !shedWidthParam.isBlank() &&
+                        shedLengthParam != null && !shedLengthParam.isBlank()) {
+                    int shedWidth = Integer.parseInt(shedWidthParam);
+                    int shedLength = Integer.parseInt(shedLengthParam);
+                    carport.setShedWidth(shedWidth);
+                    carport.setShedLength(shedLength);
+                    System.out.println("Shed Width: " + shedWidth);
+                    System.out.println("Shed Length: " + shedLength);
+                }
+            }
+
+            // Save carport to database
             carportMapper.saveCarport(carport);
 
-            // Create order
+            // Create and save order
             Order order = new Order();
             order.setCustomer(customer);
             order.setCarport(carport);
-            order.setPrice(25000);  // Hardcoded price. TODO: code price calc. method
-            order.setStatus("Ny ordre");
+            order.setPrice(25000);  // Hardcoded price. TODO: add dynamic price calculation
+            order.setStatus("New order");
             order.setDeliveryDate(null);
-
             orderMapper.saveOrder(order);
 
             // Save order in session
             ctx.sessionAttribute("order", order);
 
-            // Redirect to Thank you for your order site
+            // Redirect to thank you page
             ctx.redirect("/tak-for-din-ordre");
 
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            ctx.status(400).result("Error: Please fill out all fields correctly.");
         } catch (Exception e) {
             e.printStackTrace();
-            ctx.status(500);
-            ctx.result("Noget gik galt. Prøv igen.");
+            ctx.status(500).result("Something went wrong. Please try again.");
         }
     }
 
@@ -101,6 +123,7 @@ public class OrderController {
         Order order = ctx.sessionAttribute("order");
         ctx.json(order);
     }
+
     private void getCityByZip(Context ctx) {
         try {
             int zip = Integer.parseInt(ctx.pathParam("zip"));

@@ -10,6 +10,8 @@ public class Carport {
     private String roofType;
     private String roofMaterial;
     private int roofSlope;
+    private int shedWidth;
+    private int shedLength;
 
     public Carport(int height, int length, int width) {
         this.height = height;
@@ -19,6 +21,10 @@ public class Carport {
 
     public List<Material> getMaterialList() {
         return materialList;
+    }
+
+    public void setMaterialList(List<Material> materialList) {
+        this.materialList = materialList;
     }
 
     public int getHeight() {
@@ -45,10 +51,6 @@ public class Carport {
         this.width = width;
     }
 
-    public void setMaterialList(List<Material> materialList) {
-        this.materialList = materialList;
-    }
-
     public String getRoofType() {
         return roofType;
     }
@@ -73,6 +75,22 @@ public class Carport {
         this.roofSlope = roofSlope;
     }
 
+    public int getShedWidth() {
+        return shedWidth;
+    }
+
+    public void setShedWidth(int shedWidth) {
+        this.shedWidth = shedWidth;
+    }
+
+    public int getShedLength() {
+        return shedLength;
+    }
+
+    public void setShedLength(int shedLength) {
+        this.shedLength = shedLength;
+    }
+
     @Override
     public String toString() {
         return "Carport{" +
@@ -83,6 +101,8 @@ public class Carport {
                 ", roofType='" + roofType + '\'' +
                 ", roofMaterial='" + roofMaterial + '\'' +
                 ", roofSlope=" + roofSlope +
+                ", shedWidth=" + shedWidth +
+                ", shedLength=" + shedLength +
                 '}';
     }
 }

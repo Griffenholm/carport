@@ -2,9 +2,7 @@ package app;
 
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
-import app.controllers.UserController;
 import app.controllers.OrderController;
-import app.controllers.MaterialController;
 import app.persistence.ConnectionPool;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinThymeleaf;
@@ -26,9 +24,6 @@ public class Main {
             config.jetty.modifyServletContextHandler(handler -> handler.setSessionHandler(SessionConfig.sessionConfig()));
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         }).start(7070);
-
-        // Routing to customer index page
-        app.get("/", ctx -> ctx.render("index.html"));
 
         // Add OrderController routes
         OrderController orderController = new OrderController(connectionPool);

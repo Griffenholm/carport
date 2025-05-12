@@ -33,6 +33,19 @@
                 zipError.textContent = ""; // Fjern fejlmeddelelse ved kortere eller tomt input
             }
         }
+        function toggleShedFields() {
+            const shedToggle = document.getElementById('shedToggle');
+            const shedFields = document.getElementById('shedFields');
+            if (shedToggle.value === 'with') {
+                shedFields.style.display = 'block';
+            } else {
+                shedFields.style.display = 'none';
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", function() {
+            toggleShedFields(); // Sørg for at indstille korrekt ved indlæsning
+        });
     </script>
 
 
@@ -89,21 +102,22 @@
                 <label>Carport højde
                     <input type="number" name="carportHeight" value="230" readonly/>
                 </label>
-                <label>Tagtype
+          <!--      <label>Tagtype
                     <select th:field="*{roofType}">
                         <option th:each="option : ${roofTypeOptions}" th:value="${option}" th:text="${option}"></option>
                     </select>
                 </label>
                 <label>Tagbeklædning
-                    <select th:field="*{roofMaterial}">
-                        <option th:each="option : ${roofMaterialOptions}" th:value="${option}"
-                                th:text="${option}"></option>
+                    <select th:field="*{roofMaterial}" required>
+                        <option th:each="option : ${roofMaterialOptions}" th:value="${option}" th:text="${option}"></option>
                     </select>
                 </label>
+
                 <label>Taghældning
                     <input type="number" th:field="*{roofSlope}" placeholder="Angiv taghældning i grader" required/>
                 </label>
             </div>
+            -->
 
             <!-- Shed Section -->
             <div class="form-section">
