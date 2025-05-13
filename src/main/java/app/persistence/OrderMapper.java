@@ -18,9 +18,9 @@ public class OrderMapper {
 
     public void saveOrder(Order order) throws SQLException {
         String sql = """
-        INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -44,7 +44,6 @@ public class OrderMapper {
             if (affectedRows == 0) {
                 throw new SQLException("Creating order failed, no rows affected.");
             }
-
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     order.setOrderId(generatedKeys.getInt(1));
@@ -54,6 +53,4 @@ public class OrderMapper {
             }
         }
     }
-
-
 }

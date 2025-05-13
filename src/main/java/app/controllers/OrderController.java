@@ -67,7 +67,6 @@ public class OrderController {
 
             // Get available salesperson for this order
             Salesperson salesperson = userMapper.assignSalesperson();
-            System.out.println("Assigned Salesperson: " + salesperson);
 
             // Receive carport data from the form
             int carportWidth = Integer.parseInt(ctx.formParam("carportWidth"));
@@ -105,7 +104,7 @@ public class OrderController {
             order.setCustomer(customer);
             order.setCarport(carport);
             order.setPrice(25000);  // Hardcoded price. TODO: add dynamic price calculation
-            order.setStatus("New order");
+            order.setStatus("Ny ordre");
             order.setDeliveryDate(null);
             order.setSalesperson(salesperson);
             order.setCarportHeight(carportHeight);

@@ -18,7 +18,7 @@
                     .then(data => {
                         if (data.cityName) {
                             cityField.value = data.cityName;
-                            zipError.textContent = ""; // Fjern fejlmeddelelse
+                            zipError.textContent = "";
                         } else {
                             cityField.value = "";
                             zipError.textContent = "Postnummeret findes ikke i databasen.";
@@ -30,9 +30,10 @@
                     });
             } else {
                 cityField.value = "";
-                zipError.textContent = ""; // Fjern fejlmeddelelse ved kortere eller tomt input
+                zipError.textContent = "";
             }
         }
+
         function toggleShedFields() {
             const shedToggle = document.getElementById('shedToggle');
             const shedFields = document.getElementById('shedFields');
@@ -43,8 +44,8 @@
             }
         }
 
-        window.addEventListener("DOMContentLoaded", function() {
-            toggleShedFields(); // Sørg for at indstille korrekt ved indlæsning
+        window.addEventListener("DOMContentLoaded", function () {
+            toggleShedFields();
         });
     </script>
 
@@ -79,11 +80,13 @@
                     Ved bestilling medfølger standardbyggevejledning og en tegning af din carport. Du kan bygge den selv
                     eller vi kan henvise til en dygtig håndværker.</p>
                 <br><br>
-                <p>Har du spørgsmål? Få hurtigt svar på: <p/>
+                <p>Har du spørgsmål? Få hurtigt svar på:
+                <p/>
                 <p><strong>47 16 08 00</strong></p>
             </div>
             <div class="intro-image">
-                <img src="../public/images/carport-index.png" th:src="@{/images/carport-index.png}" alt="Eksempel på carport">
+                <img src="../public/images/carport-index.png" th:src="@{/images/carport-index.png}"
+                     alt="Eksempel på carport">
             </div>
         </section>
 
@@ -102,21 +105,21 @@
                     <input type="number" name="carportHeight" value="230" readonly/>
                 </label>
             </div>
-          <!--      <label>Tagtype
-                    <select th:field="*{roofType}">
-                        <option th:each="option : ${roofTypeOptions}" th:value="${option}" th:text="${option}"></option>
-                    </select>
-                </label>
-                <label>Tagbeklædning
-                    <select th:field="*{roofMaterial}" required>
-                        <option th:each="option : ${roofMaterialOptions}" th:value="${option}" th:text="${option}"></option>
-                    </select>
-                </label>
+            <!--      <label>Tagtype
+                      <select th:field="*{roofType}">
+                          <option th:each="option : ${roofTypeOptions}" th:value="${option}" th:text="${option}"></option>
+                      </select>
+                  </label>
+                  <label>Tagbeklædning
+                      <select th:field="*{roofMaterial}" required>
+                          <option th:each="option : ${roofMaterialOptions}" th:value="${option}" th:text="${option}"></option>
+                      </select>
+                  </label>
 
-                <label>Taghældning
-                    <input type="number" th:field="*{roofSlope}" placeholder="Angiv taghældning i grader" required/>
-                </label>
-            -->
+                  <label>Taghældning
+                      <input type="number" th:field="*{roofSlope}" placeholder="Angiv taghældning i grader" required/>
+                  </label>
+              -->
 
             <!-- Shed Section -->
             <div class="form-section">
@@ -156,12 +159,15 @@
                 <h2>Skitse</h2>
                 <button type="button" name="updateSketch">
                     Opdater skitse
-                    <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon" style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                    <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon"
+                         style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
                 </button>
                 <h3>Skitse fra siden</h3>
-                <img src="../public/images/sketch_sideview.png" th:src="@{/images/sketch_sideview.png}" alt="Skitse fra siden">
+                <img src="../public/images/sketch_sideview.png" th:src="@{/images/sketch_sideview.png}"
+                     alt="Skitse fra siden">
                 <h3>Skitse fra oven</h3>
-                <img src="../public/images/sketch_topview.png" th:src="@{/images/sketch_topview.png}" alt="Skitse fra oven">
+                <img src="../public/images/sketch_topview.png" th:src="@{/images/sketch_topview.png}"
+                     alt="Skitse fra oven">
             </div>
 
             <div class="price-section">

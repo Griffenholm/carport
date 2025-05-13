@@ -19,9 +19,9 @@ public class UserMapper {
 
     public void saveUser(Customer customer) throws SQLException {
         String sql = """
-    INSERT INTO customer (name, address, zip, phone_number, email) 
-    VALUES (?, ?, ?, ?, ?)
-    """;
+                INSERT INTO customer (name, address, zip, phone_number, email) 
+                VALUES (?, ?, ?, ?, ?)
+                """;
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, customer.getName());
@@ -35,16 +35,16 @@ public class UserMapper {
 
     public Salesperson assignSalesperson() throws SQLException {
         String sql = """
-            SELECT s.salesperson_id, s.name, s.email, s.password, s.is_admin,
-                   COUNT(o.order_id) AS active_orders
-            FROM salesperson s
-            LEFT JOIN orders o 
-            ON s.salesperson_id = o.salesperson_id 
-            AND o.status = 'Ny ordre'
-            GROUP BY s.salesperson_id, s.name, s.email, s.password, s.is_admin
-            ORDER BY active_orders ASC
-            LIMIT 1;
-        """;
+                SELECT s.salesperson_id, s.name, s.email, s.password, s.is_admin,
+                       COALESCE(COUNT(o.order_id), 0) AS active_orders
+                FROM salesperson s
+                LEFT JOIN orders o\s
+                    ON s.salesperson_id = o.salesperson_id\s
+                    AND o.status = 'Ny ordre'
+                GROUP BY s.salesperson_id, s.name, s.email, s.password, s.is_admin
+                ORDER BY active_orders ASC
+                LIMIT 1;
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -57,15 +57,12 @@ public class UserMapper {
                 String password = rs.getString("password");
                 boolean isAdmin = rs.getBoolean("is_admin");
 
-                // Returner den salesperson med færrest 'Ny ordre'
+                // Return salesperson with the fewest 'Ny ordre'
                 return new Salesperson(salespersonId, name, email, password, isAdmin);
             }
         }
-
-        // Hvis der ikke er nogen sælgere overhovedet (bør ikke ske)
         throw new IllegalStateException("Ingen sælgere tilgængelige.");
     }
-
 
     public City getCityByZip(int zip) throws SQLException {
         String sql = "SELECT zip, city_name FROM city WHERE zip = ?";
@@ -80,6 +77,4 @@ public class UserMapper {
         }
         return null;
     }
-
-
 }
