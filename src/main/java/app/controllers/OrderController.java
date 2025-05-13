@@ -78,6 +78,9 @@ public class OrderController {
 
             // Check for optional shed
             String shedToggle = ctx.formParam("shedToggle");
+            Integer shedWidth = null;
+            Integer shedLength = null;
+
             if ("with".equals(shedToggle)) {
                 String shedWidthParam = ctx.formParam("shedWidth");
                 String shedLengthParam = ctx.formParam("shedLength");
@@ -85,8 +88,8 @@ public class OrderController {
                 // Only add shed if both fields are filled
                 if (shedWidthParam != null && !shedWidthParam.isBlank() &&
                         shedLengthParam != null && !shedLengthParam.isBlank()) {
-                    int shedWidth = Integer.parseInt(shedWidthParam);
-                    int shedLength = Integer.parseInt(shedLengthParam);
+                    shedWidth = Integer.parseInt(shedWidthParam);
+                    shedLength = Integer.parseInt(shedLengthParam);
                     carport.setShedWidth(shedWidth);
                     carport.setShedLength(shedLength);
                     System.out.println("Shed Width: " + shedWidth);
@@ -109,6 +112,9 @@ public class OrderController {
             order.setCarportWidth(carportWidth);
             order.setCarportLength(carportLength);
 
+            // Set shed dimensions if available
+            order.setShedWidth(shedWidth != null ? shedWidth : 0);
+            order.setShedLength(shedLength != null ? shedLength : 0);
 
             orderMapper.saveOrder(order);
 
@@ -126,6 +132,7 @@ public class OrderController {
             ctx.status(500).result("Something went wrong. Please try again.");
         }
     }
+
 
 
     private void showSummary(Context ctx) {
