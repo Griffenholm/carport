@@ -1,9 +1,6 @@
 package app.controllers;
 
-import app.entities.Carport;
-import app.entities.City;
-import app.entities.Customer;
-import app.entities.Order;
+import app.entities.*;
 import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
@@ -68,10 +65,15 @@ public class OrderController {
             Customer customer = new Customer(name, address, zip, cityName, phone, email);
             userMapper.saveUser(customer);
 
+            // Get available salesperson for this order
+            Salesperson salesperson = userMapper.assignSalesperson();
+            System.out.println("Assigned Salesperson: " + salesperson);
+
             // Receive carport data from the form
             int carportWidth = Integer.parseInt(ctx.formParam("carportWidth"));
             int carportLength = Integer.parseInt(ctx.formParam("carportLength"));
             int carportHeight = Integer.parseInt(ctx.formParam("carportHeight"));
+
             Carport carport = new Carport(carportHeight, carportLength, carportWidth);
 
             // Check for optional shed
@@ -102,6 +104,11 @@ public class OrderController {
             order.setPrice(25000);  // Hardcoded price. TODO: add dynamic price calculation
             order.setStatus("New order");
             order.setDeliveryDate(null);
+            order.setSalesperson(salesperson);
+            order.setCarportHeight(carportHeight);
+            order.setCarportWidth(carportWidth);
+            order.setCarportLength(carportLength);
+
             orderMapper.saveOrder(order);
 
             // Save order in session
@@ -118,6 +125,7 @@ public class OrderController {
             ctx.status(500).result("Something went wrong. Please try again.");
         }
     }
+
 
     private void showSummary(Context ctx) {
         Order order = ctx.sessionAttribute("order");

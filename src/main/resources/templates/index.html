@@ -48,7 +48,6 @@
         });
     </script>
 
-
 </head>
 
 <body>
@@ -94,14 +93,15 @@
             <div class="form-section">
                 <h2>Carport</h2>
                 <label>Carport bredde
-                    <input type="number" th:field="*{carportWidth}" placeholder="Angiv bredde i cm" required/>
+                    <input type="number" name="carportWidth" placeholder="Angiv bredde i cm" required/>
                 </label>
                 <label>Carport længde
-                    <input type="number" th:field="*{carportLength}" placeholder="Angiv længde i cm" required/>
+                    <input type="number" name="carportLength" placeholder="Angiv længde i cm" required/>
                 </label>
                 <label>Carport højde
                     <input type="number" name="carportHeight" value="230" readonly/>
                 </label>
+            </div>
           <!--      <label>Tagtype
                     <select th:field="*{roofType}">
                         <option th:each="option : ${roofTypeOptions}" th:value="${option}" th:text="${option}"></option>
@@ -116,7 +116,6 @@
                 <label>Taghældning
                     <input type="number" th:field="*{roofSlope}" placeholder="Angiv taghældning i grader" required/>
                 </label>
-            </div>
             -->
 
             <!-- Shed Section -->
@@ -128,13 +127,12 @@
                         <option value="with">Med redskabsrum</option>
                     </select>
                 </label>
-
                 <div id="shedFields" class="form-subsection" style="display: none;">
                     <label>Redskabsrum bredde
-                        <input type="number" th:field="*{shedWidth}" placeholder="Angiv bredde i cm"/>
+                        <input type="number" name="shedWidth" placeholder="Angiv bredde i cm"/>
                     </label>
                     <label>Redskabsrum længde
-                        <input type="number" th:field="*{shedLength}" placeholder="Angiv længde i cm"/>
+                        <input type="number" name="shedLength" placeholder="Angiv længde i cm"/>
                     </label>
                 </div>
             </div>
@@ -142,16 +140,18 @@
             <!-- Customer Section -->
             <div class="form-section">
                 <h2>Kontaktoplysninger</h2>
-                <input type="text" th:field="*{name}" placeholder="Navn" required>
-                <input type="text" th:field="*{address}" placeholder="Adresse" required>
-                <label>Postnummer
-                    <input type="text" th:field="*{zip}" placeholder="Postnummer" required oninput="fetchCity(this)">
+                <input type="text" name="name" placeholder="Navn" required>
+                <input type="text" name="address" placeholder="Adresse" required>
+                <label>
+                    <input type="text" name="zip" placeholder="Postnummer" required oninput="fetchCity(this)">
                     <span id="zip-error" style="color: red;"></span>
                 </label>
                 <input type="text" id="city" name="city" placeholder="By" readonly required>
-                <input type="tel" th:field="*{phoneNumber}" placeholder="Telefonnummer" required>
-                <input type="email" th:field="*{email}" placeholder="Email" required>
+                <input type="tel" name="phoneNumber" placeholder="Telefonnummer" required>
+                <input type="email" name="email" placeholder="Email" required>
             </div>
+
+            <!-- Sketch Section -->
             <div class="sketch-section">
                 <h2>Skitse</h2>
                 <button type="button" name="updateSketch">

@@ -7,7 +7,6 @@ public class Customer {
     private String city;
     private int phoneNumber;
     private String email;
-    private Salesperson salesperson;
 
     public Customer(String name, String address, int zip, String city, int phoneNumber, String email) {
         this.name = name;
@@ -42,13 +41,6 @@ public class Customer {
         return email;
     }
 
-    public Salesperson getSalesperson() {
-        return salesperson;
-    }
-
-    public void setSalesperson(Salesperson salesperson) {
-        this.salesperson = salesperson;
-    }
 
     @Override
     public String toString() {
@@ -59,7 +51,6 @@ public class Customer {
                 ", city='" + city + '\'' +
                 ", phoneNumber=" + phoneNumber +
                 ", email='" + email + '\'' +
-                ", salesperson=" + salesperson +
                 '}';
     }
 }
