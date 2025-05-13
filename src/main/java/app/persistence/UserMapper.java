@@ -35,19 +35,21 @@ public class UserMapper {
 
     public Salesperson assignSalesperson() throws SQLException {
         String sql = """
-                SELECT s.salesperson_id, s.name, s.email, s.password, s.is_admin,
-                       COALESCE(COUNT(DISTINCT o.order_id), 0) as active_orders
-                FROM salesperson s
-                LEFT JOIN orders o ON s.salesperson_id = o.salesperson_id
-                WHERE o.status = 'Ny ordre' OR o.status IS NULL
-                GROUP BY s.salesperson_id, s.name, s.email, s.password, s.is_admin
-                ORDER BY active_orders ASC
-                LIMIT 1;
-            """;
+            SELECT s.salesperson_id, s.name, s.email, s.password, s.is_admin,
+                   COUNT(o.order_id) AS active_orders
+            FROM salesperson s
+            LEFT JOIN orders o 
+            ON s.salesperson_id = o.salesperson_id 
+            AND o.status = 'Ny ordre'
+            GROUP BY s.salesperson_id, s.name, s.email, s.password, s.is_admin
+            ORDER BY active_orders ASC
+            LIMIT 1;
+        """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
+
             if (rs.next()) {
                 int salespersonId = rs.getInt("salesperson_id");
                 String name = rs.getString("name");
@@ -55,13 +57,15 @@ public class UserMapper {
                 String password = rs.getString("password");
                 boolean isAdmin = rs.getBoolean("is_admin");
 
-                // Return salesperson with the fewest customers
+                // Returner den salesperson med færrest 'Ny ordre'
                 return new Salesperson(salespersonId, name, email, password, isAdmin);
             }
         }
 
+        // Hvis der ikke er nogen sælgere overhovedet (bør ikke ske)
         throw new IllegalStateException("Ingen sælgere tilgængelige.");
     }
+
 
     public City getCityByZip(int zip) throws SQLException {
         String sql = "SELECT zip, city_name FROM city WHERE zip = ?";
