@@ -18,11 +18,10 @@ DROP TABLE IF EXISTS public.variant CASCADE;
 
 CREATE TABLE IF NOT EXISTS public.customer
 (
-    salesperson_id integer NOT NULL,
+    phone_number integer NOT NULL,
     name character varying NOT NULL,
     address character varying NOT NULL,
     zip integer NOT NULL,
-    phone_number integer NOT NULL,
     email character varying NOT NULL,
     PRIMARY KEY (phone_number)
 );
@@ -31,6 +30,7 @@ CREATE TABLE IF NOT EXISTS public.orders
 (
     order_id serial NOT NULL,
     customer_number integer NOT NULL,
+    salesperson_id integer NOT NULL,
     carport_height integer NOT NULL DEFAULT 210,
     carport_width integer NOT NULL,
     carport_length integer NOT NULL,
@@ -105,7 +105,7 @@ ALTER TABLE IF EXISTS public.customer
     ON DELETE NO ACTION
     NOT VALID;
 
-ALTER TABLE IF EXISTS public.customer
+ALTER TABLE IF EXISTS public.orders
     ADD FOREIGN KEY (salesperson_id)
     REFERENCES public.salesperson (salesperson_id) MATCH SIMPLE
     ON UPDATE NO ACTION
