@@ -18,20 +18,43 @@ public class UserMapper {
     }
 
     public void saveUser(Customer customer) throws SQLException {
-        String sql = """
+        // Check if customer exists
+        Customer existingCustomer = findCustomerByPhone(customer.getPhoneNumber());
+
+        if (existingCustomer == null) {
+            // If the customer does not exist, create new
+            String sql = """
                 INSERT INTO customer (name, address, zip, phone_number, email) 
                 VALUES (?, ?, ?, ?, ?)
                 """;
-        try (Connection conn = connectionPool.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, customer.getName());
-            ps.setString(2, customer.getAddress());
-            ps.setInt(3, customer.getZip());
-            ps.setInt(4, customer.getPhoneNumber());
-            ps.setString(5, customer.getEmail());
-            ps.executeUpdate();
+            try (Connection conn = connectionPool.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, customer.getName());
+                ps.setString(2, customer.getAddress());
+                ps.setInt(3, customer.getZip());
+                ps.setInt(4, customer.getPhoneNumber());
+                ps.setString(5, customer.getEmail());
+                ps.executeUpdate();
+            }
+        } else {
+            // If customer already exists, update their data
+            String updateSql = """
+                UPDATE customer 
+                SET name = ?, address = ?, zip = ?, email = ?
+                WHERE phone_number = ?
+                """;
+            try (Connection conn = connectionPool.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                ps.setString(1, customer.getName());
+                ps.setString(2, customer.getAddress());
+                ps.setInt(3, customer.getZip());
+                ps.setString(4, customer.getEmail());
+                ps.setInt(5, customer.getPhoneNumber());
+                ps.executeUpdate();
+            }
         }
     }
+
 
     public Salesperson assignSalesperson() throws SQLException {
         String sql = """
@@ -72,6 +95,24 @@ public class UserMapper {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return new City(rs.getInt("zip"), rs.getString("city_name"));
+                }
+            }
+        }
+        return null;
+    }
+
+    public Customer findCustomerByPhone(int phoneNumber) throws SQLException {
+        String sql = "SELECT name, address, zip, phone_number, email FROM customer WHERE phone_number = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, phoneNumber);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String name = rs.getString("name");
+                    String address = rs.getString("address");
+                    int zip = rs.getInt("zip");
+                    String email = rs.getString("email");
+                    return new Customer(name, address, zip, "", phoneNumber, email);
                 }
             }
         }
