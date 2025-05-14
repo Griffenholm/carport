@@ -1,69 +1,108 @@
 package app.entities;
 
+import java.util.List;
+
 public class Carport {
+    private List<Material> materialList;
+    private int height;
+    private int length;
+    private int width;
+    private String roofType;
+    private String roofMaterial;
+    private int roofSlope;
+    private int shedWidth;
+    private int shedLength;
 
-    int salespersonId;
-    String name;
-    String email;
-    String password;
-    boolean isAdmin;
-
-    public Carport(int salespersonId, String name, String email, String password, boolean isAdmin) {
-        this.salespersonId = salespersonId;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.isAdmin = isAdmin;
+    public Carport(int height, int length, int width) {
+        this.height = height;
+        this.length = length;
+        this.width = width;
     }
 
-    public int getSalespersonId() {
-        return salespersonId;
+    public List<Material> getMaterialList() {
+        return materialList;
     }
 
-    public void setSalespersonId(int salespersonId) {
-        this.salespersonId = salespersonId;
+    public void setMaterialList(List<Material> materialList) {
+        this.materialList = materialList;
     }
 
-    public String getName() {
-        return name;
+    public int getHeight() {
+        return height;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
-    public String getEmail() {
-        return email;
+    public int getLength() {
+        return length;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setLength(int length) {
+        this.length = length;
     }
 
-    public String getPassword() {
-        return password;
+    public int getWidth() {
+        return width;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setWidth(int width) {
+        this.width = width;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public String getRoofType() {
+        return roofType;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setRoofType(String roofType) {
+        this.roofType = roofType;
+    }
+
+    public String getRoofMaterial() {
+        return roofMaterial;
+    }
+
+    public void setRoofMaterial(String roofMaterial) {
+        this.roofMaterial = roofMaterial;
+    }
+
+    public int getRoofSlope() {
+        return roofSlope;
+    }
+
+    public void setRoofSlope(int roofSlope) {
+        this.roofSlope = roofSlope;
+    }
+
+    public int getShedWidth() {
+        return shedWidth;
+    }
+
+    public void setShedWidth(int shedWidth) {
+        this.shedWidth = shedWidth;
+    }
+
+    public int getShedLength() {
+        return shedLength;
+    }
+
+    public void setShedLength(int shedLength) {
+        this.shedLength = shedLength;
     }
 
     @Override
     public String toString() {
         return "Carport{" +
-                "salespersonId=" + salespersonId +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", isAdmin=" + isAdmin +
+                "materialList=" + materialList +
+                ", height=" + height +
+                ", length=" + length +
+                ", width=" + width +
+                ", roofType='" + roofType + '\'' +
+                ", roofMaterial='" + roofMaterial + '\'' +
+                ", roofSlope=" + roofSlope +
+                ", shedWidth=" + shedWidth +
+                ", shedLength=" + shedLength +
                 '}';
     }
 }
