@@ -162,12 +162,10 @@
                     <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon"
                          style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
                 </button>
-                <h3>Skitse fra siden</h3>
-                <img src="../public/images/sketch_sideview.png" th:src="@{/images/sketch_sideview.png}"
-                     alt="Skitse fra siden">
-                <h3>Skitse fra oven</h3>
-                <img src="../public/images/sketch_topview.png" th:src="@{/images/sketch_topview.png}"
-                     alt="Skitse fra oven">
+                <h3>Skitse fra oven med spær</h3>
+                <div class="carport-svg-topview">
+                    <div th:utext="${svg}"></div>
+                </div>
             </div>
 
             <div class="price-section">

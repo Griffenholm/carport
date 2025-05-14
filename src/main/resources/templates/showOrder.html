@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>SVG tegning</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+<body>
+
+<h1>SVG tegning</h1>
+
+<div class="carport-svg-topview">
+    <div th:utext="${svg}"></div>
+</div>
+
+</body>
+</html>

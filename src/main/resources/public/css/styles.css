@@ -161,17 +161,9 @@ nav a {
     color: black;
 }
 
-/* Footer */
-footer {
-    border-top: 1px solid #ccc;
-    font-size: 14px;
-    padding: 40px 0 60px 20px;
-}
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    text-align: left;
+/* SVG */
+.carport-svg-topview {
+max-width: 500px;
 }
 
 /* Admin Orders Table */
@@ -193,4 +185,17 @@ footer {
 .orders-table td:first-child {
     width: 40px;             /* reserve room for the status bullet */
     text-align: center;      /* center the bullet */
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid #ccc;
+    font-size: 14px;
+    padding: 40px 0 60px 20px;
+}
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: left;
 }
