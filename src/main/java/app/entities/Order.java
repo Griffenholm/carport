@@ -9,8 +9,9 @@ public class Order {
     private int carportWidth;
     private int shedLength;
     private int shedWidth;
-    private int price;
+    private double price;
     private String status;
+    private LocalDate orderDate;
     private LocalDate deliveryDate;
     private Carport carport;
     private Customer customer;
@@ -32,6 +33,26 @@ public class Order {
         this.carport = carport;
         this.customer = customer;
         this.salesperson = salesperson;
+    }
+
+    public Order(int orderId, int carportHeight, int carportLength, int carportWidth, double price, String status, LocalDate deliveryDate, Customer customer) {
+        this.orderId = orderId;
+        this.carportHeight = carportHeight;
+        this.carportLength = carportLength;
+        this.carportWidth = carportWidth;
+        this.price = price;
+        this.status = status;
+        this.deliveryDate = deliveryDate;
+        this.customer = customer;
+    }
+
+    public Order(int orderId, int carportLength, int carportWidth, double price, String status, LocalDate orderDate) {
+        this.orderId = orderId;
+        this.carportLength = carportLength;
+        this.carportWidth = carportWidth;
+        this.price = price;
+        this.status = status;
+        this.deliveryDate = orderDate;
     }
 
     public int getOrderId() {
@@ -82,7 +103,7 @@ public class Order {
         this.shedWidth = shedWidth;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
