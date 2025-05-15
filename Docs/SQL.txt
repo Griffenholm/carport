@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS public.orders
     order_date date,
     delivery_date date,
     guide_id integer,
-    svg character varying,
+    svg text,
     order_price numeric(10, 2) NOT NULL,
     note character varying,
     start_price integer NOT NULL,
