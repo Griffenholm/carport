@@ -8,20 +8,24 @@ public class CarportSvg {
     public CarportSvg(int width, int length) {
         this.width = width;
         this.length = length;
-        carportSvg = new Svg(0, 0, "0 0 855 690", "100%", "auto");
-        carportSvg.addRectangle(0, 0, 600, 855, "stroke-width:1px; stroke:#000000; fill: #ffffff");
+        carportSvg = new Svg(0, 0, "0 0 " + width + " " + length, "100%", "auto");
+
+        // Add frame
+        carportSvg.addRectangle(0, 0, length, width, "stroke-width:2px; stroke:#000000; fill: #ffffff");
+
+        // Add beams and rafters
         addBeams();
         addRafters();
     }
 
     private void addBeams() {
-        carportSvg.addRectangle(0, 35, 4.5, 855, "stroke-width:1px; stroke:#000000; fill: #ffffff");
-        carportSvg.addRectangle(0, 565, 4.5, 855, "stroke-width:1px; stroke:#000000; fill: #ffffff");
+        carportSvg.addRectangle(0, 35, 4.5, width, "stroke-width:2px; stroke:#000000; fill: #ffffff");
+        carportSvg.addRectangle(0, length - 35, 4.5, width, "stroke-width:2px; stroke:#000000; fill: #ffffff");
     }
 
     private void addRafters() {
-        for (double i = 0; i < 775.5; i += 55) {
-            carportSvg.addRectangle(i, 0, 600, 4.5, "stroke-width:1px; stroke:#000000; fill: #ffffff");
+        for (double i = 0; i < width; i += 55) {
+            carportSvg.addRectangle(i, 0, length, 4.5, "stroke-width:2px; stroke:#000000; fill: #ffffff");
         }
     }
 
@@ -30,4 +34,3 @@ public class CarportSvg {
         return carportSvg.toString();
     }
 }
-

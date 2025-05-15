@@ -28,8 +28,8 @@ public class OrderController {
     public void addRoutes(Javalin app) {
         app.post("/order", this::handleOrder);
         app.get("/summary", this::showSummary);
-        app.get("/", this::showOrder);  // Brug kun denne
-
+        app.get("/", this::showOrder);
+        app.post("/update-sketch", this::updateSketch);
         app.get("/tak-for-din-ordre", ctx -> {
             Order order = ctx.sessionAttribute("order");
             if (order != null) {
@@ -166,4 +166,20 @@ public class OrderController {
             ctx.status(500).result("Error retrieving roof materials.");
         }
     }
+
+    private void updateSketch(Context ctx) {
+        // Hent brugerens input
+        int width = Integer.parseInt(ctx.formParam("carportWidth"));
+        int length = Integer.parseInt(ctx.formParam("carportLength"));
+        int height = Integer.parseInt(ctx.formParam("carportHeight"));
+
+        // Generer SVG med brugerens input
+        CarportSvg carportSvg = new CarportSvg(width, length);
+        String svgString = carportSvg.toString();
+
+        // Tilføj SVG til Thymeleaf
+        ctx.attribute("svg", svgString);
+        ctx.render("index.html");
+    }
+
 }
