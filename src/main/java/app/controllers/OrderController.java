@@ -5,6 +5,8 @@ import app.persistence.ConnectionPool;
 import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
+import app.services.CarportSvg;
+import app.services.Svg;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -26,7 +28,8 @@ public class OrderController {
     public void addRoutes(Javalin app) {
         app.post("/order", this::handleOrder);
         app.get("/summary", this::showSummary);
-        app.get("/city/{zip}", this::getCityByZip);
+        app.get("/", this::showOrder);
+        app.post("/update-sketch", this::updateSketch);
         app.get("/tak-for-din-ordre", ctx -> {
             Order order = ctx.sessionAttribute("order");
             if (order != null) {
@@ -36,19 +39,7 @@ public class OrderController {
             }
         });
 
-        app.get("/", ctx -> {
-            try {
-                List<String> roofMaterialOptions = carportMapper.getRoofMaterials();
-                List<String> roofTypeOptions = List.of("Flat roof");  // Hardcoded for now
-
-                ctx.attribute("roofMaterialOptions", roofMaterialOptions);
-                ctx.attribute("roofTypeOptions", roofTypeOptions);
-                ctx.render("index.html");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                ctx.status(500).result("Error retrieving roof materials.");
-            }
-        });
+        app.get("/city/{zip}", this::getCityByZip);
     }
 
     private void handleOrder(Context ctx) {
@@ -91,8 +82,6 @@ public class OrderController {
                     shedLength = Integer.parseInt(shedLengthParam);
                     carport.setShedWidth(shedWidth);
                     carport.setShedLength(shedLength);
-                    System.out.println("Shed Width: " + shedWidth);
-                    System.out.println("Shed Length: " + shedLength);
                 }
             }
 
@@ -152,6 +141,48 @@ public class OrderController {
             ctx.status(400).result("Invalid zip code format");
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void showOrder(Context ctx) {
+        try {
+            // SVG til carport
+            CarportSvg svg = new CarportSvg(600, 780);
+            ctx.attribute("svg", svg.toString());
+
+            // Hent tagmuligheder
+            List<String> roofMaterialOptions = carportMapper.getRoofMaterials();
+            List<String> roofTypeOptions = List.of("Flat roof");  // Hardcoded for now
+
+            ctx.attribute("roofMaterialOptions", roofMaterialOptions);
+            ctx.attribute("roofTypeOptions", roofTypeOptions);
+
+            // Render index.html
+            ctx.render("index.html");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Error retrieving roof materials.");
+        }
+    }
+
+    private void updateSketch(Context ctx) {
+        try {
+            // Hent brugerens input
+            int width = Integer.parseInt(ctx.formParam("carportWidth"));
+            int length = Integer.parseInt(ctx.formParam("carportLength"));
+            int height = Integer.parseInt(ctx.formParam("carportHeight"));
+
+            // Generer SVG med brugerens input
+            CarportSvg carportSvg = new CarportSvg(width, length);
+            String svgString = carportSvg.toString();
+
+            // Returner SVG som tekst
+            ctx.result(svgString);
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Invalid dimensions");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Something went wrong while updating the sketch.");
         }
     }
 }
