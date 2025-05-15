@@ -6,7 +6,6 @@ import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
 import app.services.CarportSvg;
-import app.services.Svg;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
