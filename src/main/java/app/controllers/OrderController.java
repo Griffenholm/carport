@@ -66,6 +66,11 @@ public class OrderController {
 
             Carport carport = new Carport(carportHeight, carportLength, carportWidth);
 
+            // Generate SVG based on carport dimensions
+            CarportSvg carportSvg = new CarportSvg(carportWidth, carportLength);
+            String svgString = carportSvg.toString();
+            System.out.println("SVG: " + svgString);
+
             // Check for optional shed
             String shedToggle = ctx.formParam("shedToggle");
             Integer shedWidth = null;
@@ -99,10 +104,11 @@ public class OrderController {
             order.setCarportHeight(carportHeight);
             order.setCarportWidth(carportWidth);
             order.setCarportLength(carportLength);
-
             // Set shed dimensions if available
             order.setShedWidth(shedWidth != null ? shedWidth : 0);
             order.setShedLength(shedLength != null ? shedLength : 0);
+            // Add the generated SVG to the order
+            order.setSvg(svgString);
 
             orderMapper.saveOrder(order);
 
@@ -120,8 +126,6 @@ public class OrderController {
             ctx.status(500).result("Something went wrong. Please try again.");
         }
     }
-
-
 
     private void showSummary(Context ctx) {
         Order order = ctx.sessionAttribute("order");
@@ -146,11 +150,11 @@ public class OrderController {
 
     private void showOrder(Context ctx) {
         try {
-            // SVG til carport
+            // SVG for carport
             CarportSvg svg = new CarportSvg(600, 780);
             ctx.attribute("svg", svg.toString());
 
-            // Hent tagmuligheder
+            // Get roof-types
             List<String> roofMaterialOptions = carportMapper.getRoofMaterials();
             List<String> roofTypeOptions = List.of("Flat roof");  // Hardcoded for now
 
@@ -167,22 +171,31 @@ public class OrderController {
 
     private void updateSketch(Context ctx) {
         try {
-            // Hent brugerens input
+            // Get user input
             int width = Integer.parseInt(ctx.formParam("carportWidth"));
             int length = Integer.parseInt(ctx.formParam("carportLength"));
             int height = Integer.parseInt(ctx.formParam("carportHeight"));
 
-            // Generer SVG med brugerens input
+            // Generate SVG based on user input
             CarportSvg carportSvg = new CarportSvg(width, length);
             String svgString = carportSvg.toString();
 
-            // Returner SVG som tekst
+            // Save SVG in the order if it exists
+            Order order = ctx.sessionAttribute("order");
+            if (order != null) {
+                order.setSvg(svgString);
+                orderMapper.saveOrder(order); // This will now save the SVG as part of the order
+                System.out.println("SVG saved for order ID: " + order.getOrderId());
+            }
+
+            // Send the SVG back to the frontend
             ctx.result(svgString);
-        } catch (NumberFormatException e) {
-            ctx.status(400).result("Invalid dimensions");
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
-            ctx.status(500).result("Something went wrong while updating the sketch.");
+            ctx.status(500).result("Error saving SVG to database.");
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            ctx.status(400).result("Invalid input. Please provide valid carport dimensions.");
         }
     }
 }

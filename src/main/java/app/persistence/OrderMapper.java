@@ -18,14 +18,13 @@ public class OrderMapper {
 
     public void saveOrder(Order order) throws SQLException {
         String sql = """
-                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id, svg) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            // Set customer number (phone number)
             stmt.setInt(1, order.getCustomer().getPhoneNumber());
             stmt.setInt(2, order.getCarportHeight());
             stmt.setInt(3, order.getCarportWidth());
@@ -35,9 +34,10 @@ public class OrderMapper {
             stmt.setString(7, order.getStatus());
             stmt.setInt(8, order.getPrice());
             stmt.setInt(9, order.getPrice()); // Assuming start price is the same as order price for now
-
             // Set salesperson ID directly from the order
             stmt.setInt(10, order.getSalesperson().getSalespersonId());
+            // Set SVG if it exists, otherwise set it to null
+            stmt.setString(11, order.getSvg() != null ? order.getSvg() : null);
 
             int affectedRows = stmt.executeUpdate();
 
