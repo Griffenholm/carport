@@ -47,6 +47,22 @@
         window.addEventListener("DOMContentLoaded", function () {
             toggleShedFields();
         });
+
+        function updateSketch() {
+            const form = document.getElementById("carportForm");
+            const formData = new FormData(form);
+
+            fetch("/update-sketch", {
+                method: "POST",
+                body: formData,
+            })
+                .then(response => response.text())
+                .then(svg => {
+                    document.querySelector(".carport-svg-topview > div").innerHTML = svg;
+                })
+                .catch(error => console.error("Error:", error));
+        }
+
     </script>
 
 </head>
@@ -91,7 +107,7 @@
         </section>
 
         <!-- Order Form -->
-        <form th:action="@{/order}" method="post">
+        <form id="carportForm" th:action="@{/order}" method="post">
             <!-- Carport Section -->
             <div class="form-section">
                 <h2>Carport</h2>
@@ -143,7 +159,7 @@
             <!-- Customer Section -->
             <div class="form-section">
                 <h2>Kontaktoplysninger</h2>
-                <input type="text" name="name" placeholder="Navn" required>
+                <input type="text" name="name" placeholder="Fornavn og efternavn(e)" required>
                 <input type="text" name="address" placeholder="Adresse" required>
                 <label>
                     <input type="text" name="zip" placeholder="Postnummer" required oninput="fetchCity(this)">
@@ -157,7 +173,7 @@
             <!-- Sketch Section -->
             <div class="sketch-section">
                 <h2>Skitse</h2>
-                <button type="button" name="updateSketch">
+                <button type="button" onclick="updateSketch()">
                     Opdater skitse
                     <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon"
                          style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">

@@ -162,8 +162,10 @@ nav a {
 }
 
 /* SVG */
-.carport-svg-topview {
-max-width: 500px;
+.carport-svg-topview svg {
+    max-width: 100%;
+    width: auto;
+    height: auto;
 }
 
 /* Admin Orders Table */

@@ -82,8 +82,6 @@ public class OrderController {
                     shedLength = Integer.parseInt(shedLengthParam);
                     carport.setShedWidth(shedWidth);
                     carport.setShedLength(shedLength);
-                    System.out.println("Shed Width: " + shedWidth);
-                    System.out.println("Shed Length: " + shedLength);
                 }
             }
 
@@ -168,18 +166,23 @@ public class OrderController {
     }
 
     private void updateSketch(Context ctx) {
-        // Hent brugerens input
-        int width = Integer.parseInt(ctx.formParam("carportWidth"));
-        int length = Integer.parseInt(ctx.formParam("carportLength"));
-        int height = Integer.parseInt(ctx.formParam("carportHeight"));
+        try {
+            // Hent brugerens input
+            int width = Integer.parseInt(ctx.formParam("carportWidth"));
+            int length = Integer.parseInt(ctx.formParam("carportLength"));
+            int height = Integer.parseInt(ctx.formParam("carportHeight"));
 
-        // Generer SVG med brugerens input
-        CarportSvg carportSvg = new CarportSvg(width, length);
-        String svgString = carportSvg.toString();
+            // Generer SVG med brugerens input
+            CarportSvg carportSvg = new CarportSvg(width, length);
+            String svgString = carportSvg.toString();
 
-        // Tilføj SVG til Thymeleaf
-        ctx.attribute("svg", svgString);
-        ctx.render("index.html");
+            // Returner SVG som tekst
+            ctx.result(svgString);
+        } catch (NumberFormatException e) {
+            ctx.status(400).result("Invalid dimensions");
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Something went wrong while updating the sketch.");
+        }
     }
-
 }

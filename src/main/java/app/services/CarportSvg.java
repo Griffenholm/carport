@@ -8,7 +8,7 @@ public class CarportSvg {
     public CarportSvg(int width, int length) {
         this.width = width;
         this.length = length;
-        carportSvg = new Svg(0, 0, "0 0 " + width + " " + length, "100%", "auto");
+        carportSvg = new Svg(0, 0, "0 0 " + width + " " + length, width + "px", length + "px");
 
         // Add frame
         carportSvg.addRectangle(0, 0, length, width, "stroke-width:2px; stroke:#000000; fill: #ffffff");
