@@ -29,7 +29,7 @@
 
 <main>
     <div class="container">
-        <h1>Hej <span th:text="${adminName}">Admin Name</span></h1>
+        <h1>Hej <span th:text="${adminName}">Sælger</span></h1>
         <section class="orders-section">
             <!-- Sub-heading + search -->
             <div class="orders-header"
@@ -78,23 +78,22 @@
                     <th>Status</th>
                     <th>Sælger</th>
                     <th>Dato</th>
-                    <th>Ordernr.</th>
-                    <th>Kunde</th>
+                    <th>Ordre nr.</th>
+                    <th>Kundenavn</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="order : ${orders}">
                     <td>
-        <span class="status-indicator"
-              th:style="|color: ${order.color}|">
-          •
-        </span>
+            <span class="status-indicator" style="color: grey;">
+                •
+            </span>
                     </td>
-                    <td th:text="${order.status}">Status</td>
-                    <td th:text="${order.seller}">Seller</td>
-                    <td th:text="${#dates.format(order.date, 'dd/MM/yyyy')}">01/01/2025</td>
-                    <td th:text="${order.id}">0000</td>
-                    <td th:text="${order.customerName}">Customer</td>
+                    <td th:text="${order.status != null ? order.status : 'Ingen status'}">Ingen status</td>
+                    <td th:text="${order.salesperson != null && order.salesperson.name != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</td>
+                    <td th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</td>
+                    <td th:text="${order.orderId}">0000</td>
+                    <td th:text="${order.customer.name != null ? order.customer.name : 'Ukendt kunde'}">Ukendt kunde</td>
                 </tr>
                 </tbody>
             </table>

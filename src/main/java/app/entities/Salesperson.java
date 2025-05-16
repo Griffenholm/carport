@@ -15,6 +15,9 @@ public class Salesperson {
         this.isAdmin = isAdmin;
     }
 
+    public Salesperson() {
+    }
+
     public int getSalespersonId() {
         return salespersonId;
     }

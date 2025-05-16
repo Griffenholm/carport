@@ -1,12 +1,12 @@
 package app.persistence;
 
+import app.entities.Customer;
 import app.entities.Order;
+import app.entities.Salesperson;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrderMapper {
 
@@ -54,4 +54,53 @@ public class OrderMapper {
             }
         }
     }
+
+    public List<Order> getAllOrders() throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = """
+        SELECT 
+            o.order_id, 
+            o.status, 
+            o.order_date, 
+            c.name AS customer_name, 
+            s.salesperson_id, 
+            s.name AS salesperson_name 
+        FROM orders o 
+        LEFT JOIN customer c ON o.customer_number = c.phone_number 
+        LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
+        """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("order_id"));
+                order.setStatus(rs.getString("status") != null ? rs.getString("status") : "Ingen status");
+                Date orderDate = rs.getDate("order_date");
+                order.setOrderDate(orderDate != null ? orderDate.toLocalDate() : null);
+
+                // Create Customer
+                Customer customer = new Customer();
+                String customerName = rs.getString("customer_name");
+                customer.setName(customerName != null ? customerName : "Ukendt kunde");
+                order.setCustomer(customer);
+
+                // Create Salesperson
+                int salespersonId = rs.getInt("salesperson_id");
+                if (!rs.wasNull()) {
+                    Salesperson salesperson = new Salesperson();
+                    salesperson.setSalespersonId(salespersonId);
+                    String salespersonName = rs.getString("salesperson_name");
+                    salesperson.setName(salespersonName != null ? salespersonName : "Ukendt sælger");
+                    order.setSalesperson(salesperson);
+                }
+
+                orders.add(order);
+            }
+        }
+        return orders;
+    }
+
 }
