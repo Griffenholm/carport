@@ -10,6 +10,7 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class OrderController {
@@ -68,7 +69,6 @@ public class OrderController {
             // Generate SVG based on carport dimensions
             CarportSvg carportSvg = new CarportSvg(carportWidth, carportLength);
             String svgString = carportSvg.toString();
-            System.out.println("SVG: " + svgString);
 
             // Check for optional shed
             String shedToggle = ctx.formParam("shedToggle");
@@ -108,6 +108,8 @@ public class OrderController {
             order.setShedLength(shedLength != null ? shedLength : 0);
             // Add the generated SVG to the order
             order.setSvg(svgString);
+            // Sæt ordredatoen automatisk til dags dato
+            order.setOrderDate(LocalDate.now());
 
             orderMapper.saveOrder(order);
 
@@ -184,7 +186,6 @@ public class OrderController {
             if (order != null) {
                 order.setSvg(svgString);
                 orderMapper.saveOrder(order); // This will now save the SVG as part of the order
-                System.out.println("SVG saved for order ID: " + order.getOrderId());
             }
 
             // Send the SVG back to the frontend
