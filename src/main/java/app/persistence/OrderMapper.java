@@ -22,8 +22,8 @@ public class OrderMapper {
 
     public void saveOrder(Order order) throws SQLException {
         String sql = """
-                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id, svg) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id, svg, order_date) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (Connection conn = connectionPool.getConnection();
@@ -43,6 +43,7 @@ public class OrderMapper {
             stmt.setInt(10, order.getSalesperson().getSalespersonId());
             // Set SVG if it exists, otherwise set it to null
             stmt.setString(11, order.getSvg() != null ? order.getSvg() : null);
+            stmt.setDate(12, java.sql.Date.valueOf(order.getOrderDate()));
 
             int affectedRows = stmt.executeUpdate();
 
