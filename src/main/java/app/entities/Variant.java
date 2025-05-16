@@ -15,6 +15,13 @@ public class Variant {
         this.material = material;
     }
 
+    public Variant(int variantId, int length, Material material)
+    {
+        this.variantId = variantId;
+        this.length = length;
+        this.material = material;
+    }
+
     public int getVariantId() {
         return variantId;
     }
