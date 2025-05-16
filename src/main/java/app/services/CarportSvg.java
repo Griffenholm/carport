@@ -13,9 +13,10 @@ public class CarportSvg {
         // Add frame
         carportSvg.addRectangle(0, 0, length, width, "stroke-width:2px; stroke:#000000; fill: #ffffff");
 
-        // Add beams and rafters
+        // Add beams, rafters and posts
         addBeams();
         addRafters();
+        addPosts();
     }
 
     private void addBeams() {
@@ -27,6 +28,13 @@ public class CarportSvg {
         for (double i = 0; i < width; i += 55) {
             carportSvg.addRectangle(i, 0, length, 4.5, "stroke-width:2px; stroke:#000000; fill: #ffffff");
         }
+    }
+
+    private void addPosts() {
+        carportSvg.addRectangle(35, 35, 15, 15, "stroke-width:3px; stroke:#000000; fill: #ffffff");
+        carportSvg.addRectangle(35, length - 45, 15, 15, "stroke-width:3px; stroke:#000000; fill: #ffffff");
+        carportSvg.addRectangle(width - 50, 35, 15, 15, "stroke-width:3px; stroke:#000000; fill: #ffffff");
+        carportSvg.addRectangle(width - 50, length - 45, 15, 15, "stroke-width:3px; stroke:#000000; fill: #ffffff");
     }
 
     @Override
