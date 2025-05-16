@@ -83,19 +83,22 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="order : ${orders}">
+                <tr th:each="order : ${orders}"
+                    th:href="@{/admin/ordre/{id}(id=${order.orderId})}"
+                    style="cursor: pointer;"
+                    onclick="window.location.href=this.getAttribute('href')">
+
                     <td>
-            <span class="status-indicator" style="color: grey;">
-                •
-            </span>
+                        <span class="status-indicator" style="color: grey;">•</span>
                     </td>
-                    <td th:text="${order.status != null ? order.status : 'Ingen status'}">Ingen status</td>
-                    <td th:text="${order.salesperson != null && order.salesperson.name != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</td>
+                    <td th:text="${order.status}">Ingen status</td>
+                    <td th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}"></td>
                     <td th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</td>
                     <td th:text="${order.orderId}">0000</td>
                     <td th:text="${order.customer.name != null ? order.customer.name : 'Ukendt kunde'}">Ukendt kunde</td>
                 </tr>
                 </tbody>
+
             </table>
         </section>
     </div>

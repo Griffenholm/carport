@@ -32,6 +32,7 @@ public class OrderController {
         app.get("/", this::showOrder);
         app.post("/update-sketch", this::updateSketch);
         app.get("/admin/alle-ordrer", ctx -> showOrdersPage(ctx));
+        app.get("/admin/ordre/{id}", this::showOrderDetails);
         app.get("/city/{zip}", this::getCityByZip);
         app.get("/tak-for-din-ordre", ctx -> {
             Order order = ctx.sessionAttribute("order");
@@ -213,5 +214,19 @@ public class OrderController {
             ctx.status(500).result("Fejl ved hentning af ordrer.");
         }
     }
-
+    private void showOrderDetails(Context ctx) {
+        try {
+            int orderId = Integer.parseInt(ctx.pathParam("id"));
+            Order order = orderMapper.getOrderById(orderId);
+            if (order != null) {
+                ctx.attribute("order", order);
+                ctx.render("ordre-detaljer.html");
+            } else {
+                ctx.status(404).result("Ordre ikke fundet");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af ordre.");
+        }
+    }
 }

@@ -83,6 +83,16 @@ button {
     box-sizing: border-box;
 }
 
+/* Hover over information in table */
+tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+tbody tr:hover {
+    background-color: #f2f2f2;
+}
+
+
 /* Header */
 header {
     background-color: white;
