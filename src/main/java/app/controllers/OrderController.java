@@ -11,6 +11,7 @@ import io.javalin.http.Context;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderController {
@@ -30,6 +31,9 @@ public class OrderController {
         app.get("/summary", this::showSummary);
         app.get("/", this::showOrder);
         app.post("/update-sketch", this::updateSketch);
+        app.get("/admin/alle-ordrer", ctx -> showOrdersPage(ctx));
+        app.get("/admin/ordre/{id}", this::showOrderDetails);
+        app.get("/city/{zip}", this::getCityByZip);
         app.get("/tak-for-din-ordre", ctx -> {
             Order order = ctx.sessionAttribute("order");
             if (order != null) {
@@ -38,8 +42,6 @@ public class OrderController {
                 ctx.redirect("/");
             }
         });
-
-        app.get("/city/{zip}", this::getCityByZip);
     }
 
     private void handleOrder(Context ctx) {
@@ -152,7 +154,7 @@ public class OrderController {
     private void showOrder(Context ctx) {
         try {
             // SVG for carport
-            CarportSvg svg = new CarportSvg(600, 780);
+            CarportSvg svg = new CarportSvg(500, 500);
             ctx.attribute("svg", svg.toString());
 
             // Get roof-types
@@ -195,7 +197,36 @@ public class OrderController {
             ctx.status(500).result("Error saving SVG to database.");
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            ctx.status(400).result("Invalid input. Please provide valid carport dimensions.");
+            ctx.status(400).result("Indtast venligst mål på din carport");
+        }
+    }
+
+    public void showOrdersPage(Context ctx) {
+        try {
+            List<Order> orders = orderMapper.getAllOrdersForSalesPerson();
+            if (orders == null) {
+                orders = new ArrayList<>();
+            }
+            ctx.attribute("orders", orders);
+            ctx.render("alle-ordrer.html");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af ordrer.");
+        }
+    }
+    private void showOrderDetails(Context ctx) {
+        try {
+            int orderId = Integer.parseInt(ctx.pathParam("id"));
+            Order order = orderMapper.getOrderById(orderId);
+            if (order != null) {
+                ctx.attribute("order", order);
+                ctx.render("ordre-detaljer.html");
+            } else {
+                ctx.status(404).result("Ordre ikke fundet");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af ordre.");
         }
     }
 }

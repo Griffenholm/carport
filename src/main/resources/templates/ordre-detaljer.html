@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FOG carport bestilling</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="container">
+    <h1>Ordre Detaljer</h1>
+
+    <h2>Ordre ID: <span th:text="${order.orderId}">0000</span></h2>
+    <p>Status: <span th:text="${order.status}">Ingen status</span></p>
+    <p>Ordredato: <span th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</span></p>
+    <p>Kunde: <span th:text="${order.customer.name}">Ukendt kunde</span></p>
+    <p>Sælger: <span th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span></p>
+    <p>Carport Højde: <span th:text="${order.carportHeight}">0</span></p>
+    <p>Carport Bredde: <span th:text="${order.carportWidth}">0</span></p>
+    <p>Carport Længde: <span th:text="${order.carportLength}">0</span></p>
+    <p>Pris: <span th:text="${order.price}">0</span> DKK</p>
+
+    <a href="/admin/alle-ordrer">Tilbage til alle ordrer</a>
+</div>
+
+<footer>
+    <div class="container footer-container">
+        <p>Johannes Fog A/S</p>
+        <p>Firskovvej 20</p>
+        <p>2800 Lyngby</p>
+        <p>CVR-nr. 16314439</p>
+    </div>
+</footer>
+</body>
+</html>

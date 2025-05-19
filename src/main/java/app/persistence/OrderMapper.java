@@ -1,16 +1,20 @@
 package app.persistence;
 
+import app.entities.Customer;
+import app.entities.Order;
+import app.entities.Salesperson;
 import app.entities.*;
 import app.exceptions.DatabaseException;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class OrderMapper {
 
@@ -59,6 +63,111 @@ public class OrderMapper {
             }
         }
     }
+
+    public List<Order> getAllOrdersForSalesPerson() throws SQLException {
+        List<Order> orders = new ArrayList<>();
+        String sql = """
+        SELECT 
+            o.order_id, 
+            o.status, 
+            o.order_date, 
+            c.name AS customer_name, 
+            s.salesperson_id, 
+            s.name AS salesperson_name 
+        FROM orders o 
+        LEFT JOIN customer c ON o.customer_number = c.phone_number 
+        LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
+        """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Order order = new Order();
+                order.setOrderId(rs.getInt("order_id"));
+                order.setStatus(rs.getString("status") != null ? rs.getString("status") : "Ingen status");
+                Date orderDate = rs.getDate("order_date");
+                order.setOrderDate(orderDate != null ? orderDate.toLocalDate() : null);
+
+                // Create Customer
+                Customer customer = new Customer();
+                String customerName = rs.getString("customer_name");
+                customer.setName(customerName != null ? customerName : "Ukendt kunde");
+                order.setCustomer(customer);
+
+                // Create Salesperson
+                int salespersonId = rs.getInt("salesperson_id");
+                if (!rs.wasNull()) {
+                    Salesperson salesperson = new Salesperson();
+                    salesperson.setSalespersonId(salespersonId);
+                    String salespersonName = rs.getString("salesperson_name");
+                    salesperson.setName(salespersonName != null ? salespersonName : "Ukendt sælger");
+                    order.setSalesperson(salesperson);
+                }
+
+                orders.add(order);
+            }
+        }
+        return orders;
+    }
+
+    public Order getOrderById(int orderId) throws SQLException {
+        String sql = """
+        SELECT 
+            o.order_id, 
+            o.status, 
+            o.order_date, 
+            o.carport_height,
+            o.carport_width,
+            o.carport_length,
+            o.order_price,
+            c.name AS customer_name, 
+            s.salesperson_id, 
+            s.name AS salesperson_name 
+        FROM orders o 
+        LEFT JOIN customer c ON o.customer_number = c.phone_number 
+        LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id
+        WHERE o.order_id = ?;
+        """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Order order = new Order();
+                    order.setOrderId(rs.getInt("order_id"));
+                    order.setStatus(rs.getString("status"));
+                    order.setOrderDate(rs.getDate("order_date").toLocalDate());
+                    order.setCarportHeight(rs.getInt("carport_height"));
+                    order.setCarportWidth(rs.getInt("carport_width"));
+                    order.setCarportLength(rs.getInt("carport_length"));
+                    order.setPrice(rs.getInt("order_price"));
+
+                    // Set customer
+                    Customer customer = new Customer();
+                    customer.setName(rs.getString("customer_name"));
+                    order.setCustomer(customer);
+
+                    // Set salesperson
+                    int salespersonId = rs.getInt("salesperson_id");
+                    if (!rs.wasNull()) {
+                        Salesperson salesperson = new Salesperson();
+                        salesperson.setSalespersonId(salespersonId);
+                        salesperson.setName(rs.getString("salesperson_name"));
+                        order.setSalesperson(salesperson);
+                    }
+
+                    return order;
+                }
+            }
+        }
+        return null;
+    }
+
+
 
     public List<Order> getAllOrders() throws DatabaseException
     {
