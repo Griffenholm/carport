@@ -55,7 +55,7 @@ public class OrderMapper {
         }
     }
 
-    public List<Order> getAllOrders() throws SQLException {
+    public List<Order> getAllOrdersForSalesPerson() throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = """
         SELECT 

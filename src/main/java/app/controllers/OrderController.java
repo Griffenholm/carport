@@ -203,7 +203,7 @@ public class OrderController {
 
     public void showOrdersPage(Context ctx) {
         try {
-            List<Order> orders = orderMapper.getAllOrders();
+            List<Order> orders = orderMapper.getAllOrdersForSalesPerson();
             if (orders == null) {
                 orders = new ArrayList<>();
             }
