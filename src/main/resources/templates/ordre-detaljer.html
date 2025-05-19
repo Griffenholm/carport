@@ -1,16 +1,72 @@
+<!-- se siden her: http://localhost:7070/admin/ordre/1 -->
+
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>FOG carport bestilling</title>
-    <link rel="icon" href="/images/fogfavicon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ordredetaljer</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png"/>
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
 </head>
-
 <body>
 <div class="container">
-    <h1>Ordre Detaljer</h1>
+    <header>
+        <div class="container header-content">
+            <div class="header-logo">
+                <a href="/" th:href="@{/}">
+                    <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
+                </a>
+            </div>
+            <nav>
+                <a th:href="@{/admin/orders}">Ordrer</a>
+            </nav>
+            <div class="header-logout" style="margin-left:auto;">
+                <a th:href="@{/logout}">Log ud</a>
+            </div>
+        </div>
+    </header>
+</div>
+
+<main>
+<div class="container">
+
+    <section class="orders-section">
+        <h1 th:text="${order.customer.name}">Kundenavn</h1>
+        <p th:text="${order.customer.address}">Adresse</p>
+        <p th:text="${order.customer.zip} + ' ' + ${order.customer.city}">Postnummer og by</p>
+        <p th:text="'Tlf: ' + ${order.customer.phoneNumber}">Telefon</p>
+        <p th:text="'Email: ' + ${order.customer.email}">Email</p>
+        <hr/>
+        <p>Ordre nr: <span th:text="${order.orderId}">0000</span></p>
+        <p>Status: <span th:text="${order.status}">Ny ordre</span></p>
+        <p th:text="'Ordredato: ' + ${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ordredato</p>
+        <hr/>
+
+        <!-- Carport form -->
+        <form id="order-form" th:action="@{/admin/update-order}" method="post">
+            <div class="form-section">
+                <h2>Carport</h2>
+                <label>Carport bredde
+                    <input type="number" name="carportWidth" th:value="${order.carportWidth}" required/>
+                </label>
+                <label>Carport længde
+                    <input type="number" name="carportLength" th:value="${order.carportLength}" required/>
+                </label>
+                <!-- Skitse -->
+                <div class="sketch-section">
+                    <h2>Skitse</h2>
+                    <img id="carport-sketch" src="" alt="Carport skitse"/>
+                    <button type="button" onclick="updateSketch()">Opdater skitse</button>
+                </div>
+
+                <!-- Save button -->
+                <button type="submit">Gem ordre</button>
+            </div>
+        </form>
+    </section>
+</div>
 
     <h2>Ordre ID: <span th:text="${order.orderId}">0000</span></h2>
     <p>Status: <span th:text="${order.status}">Ingen status</span></p>
@@ -22,8 +78,10 @@
     <p>Carport Længde: <span th:text="${order.carportLength}">0</span></p>
     <p>Pris: <span th:text="${order.price}">0</span> DKK</p>
 
-    <a href="/admin/alle-ordrer">Tilbage til alle ordrer</a>
+
+
 </div>
+</main>
 
 <footer>
     <div class="container footer-container">
@@ -34,4 +92,13 @@
     </div>
 </footer>
 </body>
+
+<script>
+    function updateSketch() {
+        const width = document.querySelector('input[name="carportWidth"]').value;
+        const length = document.querySelector('input[name="carportLength"]').value;
+        const img = document.getElementById('carport-sketch');
+        img.src = `/sketch?width=${width}&length=${length}`;
+    }
+</script>
 </html>

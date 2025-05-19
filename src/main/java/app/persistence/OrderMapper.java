@@ -67,17 +67,23 @@ public class OrderMapper {
     public List<Order> getAllOrdersForSalesPerson() throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = """
-        SELECT 
-            o.order_id, 
-            o.status, 
-            o.order_date, 
-            c.name AS customer_name, 
-            s.salesperson_id, 
-            s.name AS salesperson_name 
-        FROM orders o 
-        LEFT JOIN customer c ON o.customer_number = c.phone_number 
-        LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
-        """;
+                SELECT\s
+                    o.order_id,\s
+                    o.status,\s
+                    o.order_date,\s
+                    c.name AS customer_name,\s
+                    c.address AS customer_address,
+                    c.zip AS customer_zip,
+                    ci.city_name AS customer_city,
+                    c.email AS customer_email,
+                    c.phone_number AS customer_phone_number,
+                    s.salesperson_id,\s
+                    s.name AS salesperson_name
+                FROM orders o\s
+                LEFT JOIN customer c ON o.customer_number = c.phone_number
+                LEFT JOIN city ci ON c.zip = ci.zip
+                LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -92,8 +98,12 @@ public class OrderMapper {
 
                 // Create Customer
                 Customer customer = new Customer();
-                String customerName = rs.getString("customer_name");
-                customer.setName(customerName != null ? customerName : "Ukendt kunde");
+                customer.setName(rs.getString("customer_name"));
+                customer.setAddress(rs.getString("customer_address"));
+                customer.setZip(rs.getInt("customer_zip"));
+                customer.setCity(rs.getString("customer_city"));
+                customer.setEmail(rs.getString("customer_email"));
+                customer.setPhoneNumber(rs.getInt("customer_phone_number"));
                 order.setCustomer(customer);
 
                 // Create Salesperson
@@ -101,10 +111,15 @@ public class OrderMapper {
                 if (!rs.wasNull()) {
                     Salesperson salesperson = new Salesperson();
                     salesperson.setSalespersonId(salespersonId);
-                    String salespersonName = rs.getString("salesperson_name");
-                    salesperson.setName(salespersonName != null ? salespersonName : "Ukendt sælger");
+                    salesperson.setName(rs.getString("salesperson_name"));
                     order.setSalesperson(salesperson);
                 }
+                System.out.println("Name: " + customer.getName());
+                System.out.println("Address: " + customer.getAddress());
+                System.out.println("Zip: " + customer.getZip());
+                System.out.println("City: " + customer.getCity());
+                System.out.println("Email: " + customer.getEmail());
+                System.out.println("Phone Number: " + customer.getPhoneNumber());
 
                 orders.add(order);
             }
