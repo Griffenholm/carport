@@ -4,13 +4,13 @@ public class Material {
     int materialId;
     String name;
     String description;
-    int price;
+    double price;
     String unit;
     int quantity;
     int width;
     int height;
 
-    public Material(int materialId, String name, String description, int price, String unit, int quantity, int width, int height) {
+    public Material(int materialId, String name, String description, double price, String unit, int quantity, int width, int height) {
         this.materialId = materialId;
         this.name = name;
         this.description = description;
@@ -19,6 +19,14 @@ public class Material {
         this.quantity = quantity;
         this.width = width;
         this.height = height;
+    }
+
+    public Material(int materialId, String name, String description, double price, String unit) {
+        this.materialId = materialId;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.unit = unit;
     }
 
     public int getMaterialId() {
@@ -45,7 +53,7 @@ public class Material {
         this.description = description;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
