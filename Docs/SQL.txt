@@ -319,19 +319,30 @@ VALUES
 INSERT INTO public.orders (customer_number, salesperson_id, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_date, delivery_date, order_price, cost_price, svg)
 VALUES
     (55512345, 1, 230, 300, 500, null, null, 'Ny ordre', '2025-05-16', null, 20000, 20000,
-     '<svg version="1.1" x="0" y="0" viewBox="0 0 300 500" width="300px" height="500px" preserveAspectRatio="xMinYMin">
-         <defs>
-             <marker id="beginArrow" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
-                 <path d="M0,6 L12,0 L12,12 L0,6" style="fill: #000000;" />
-             </marker>
-             <marker id="endArrow" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto">
-                 <path d="M0,0 L12,6 L0,12 L0,0" style="fill: #000000;" />
-             </marker>
-         </defs>
-         <rect x="0" y="0" height="500" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
-         <rect x="0" y="35" height="5" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
-         <rect x="0" y="465" height="5" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
-     </svg>'),
+     '<svg version="1.1"
+           x="0" y="0"
+           viewBox="0 0 300 500"  width="300px"
+           height="500px" preserveAspectRatio="xMinYMin"><defs>
+              <marker id="beginArrow" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
+                  <path d="M0,6 L12,0 L12,12 L0,6" style="fill: #000000;" />
+              </marker>
+              <marker id="endArrow" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto">
+                  <path d="M0,0 L12,6 L0,12 L0,0 " style="fill: #000000;" />
+              </marker>
+          </defs><rect x="0" y="0" height="500" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="0" y="35" height="5" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="0" y="465" height="5" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="0" y="0" height="500" width="5" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="55" y="0" height="500" width="5" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="110" y="0" height="500" width="5" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="165" y="0" height="500" width="5" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="220" y="0" height="500" width="5" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="275" y="0" height="500" width="5" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+          <rect x="35" y="35" height="15" width="15" style="stroke-width:3px; stroke:#000000; fill: #ffffff" />
+          <rect x="35" y="455" height="15" width="15" style="stroke-width:3px; stroke:#000000; fill: #ffffff" />
+          <rect x="250" y="35" height="15" width="15" style="stroke-width:3px; stroke:#000000; fill: #ffffff" />
+          <rect x="250" y="455" height="15" width="15" style="stroke-width:3px; stroke:#000000; fill: #ffffff" />
+          </svg>'),
 
     (55523456, 2, 230, 320, 550, null, null, 'Ny ordre', '2025-05-17', null, 25000, 25000,
      '<svg version="1.1" x="0" y="0" viewBox="0 0 320 550" width="320px" height="550px" preserveAspectRatio="xMinYMin">
