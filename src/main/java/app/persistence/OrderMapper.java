@@ -26,7 +26,7 @@ public class OrderMapper {
 
     public void saveOrder(Order order) throws SQLException {
         String sql = """
-                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, start_price, salesperson_id, svg, order_date) 
+                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, cost_price, salesperson_id, svg, order_date) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
@@ -42,7 +42,7 @@ public class OrderMapper {
             stmt.setObject(6, order.getShedLength() != 0 ? order.getShedLength() : null, java.sql.Types.INTEGER);
             stmt.setString(7, order.getStatus());
             stmt.setDouble(8, order.getPrice());
-            stmt.setDouble(9, order.getPrice()); // Assuming start price is the same as order price for now
+            stmt.setDouble(9, order.getPrice()); // Assuming cost price is the same as order price for now
             // Set salesperson ID directly from the order
             stmt.setInt(10, order.getSalesperson().getSalespersonId());
             // Set SVG if it exists, otherwise set it to null
@@ -114,12 +114,6 @@ public class OrderMapper {
                     salesperson.setName(rs.getString("salesperson_name"));
                     order.setSalesperson(salesperson);
                 }
-                System.out.println("Name: " + customer.getName());
-                System.out.println("Address: " + customer.getAddress());
-                System.out.println("Zip: " + customer.getZip());
-                System.out.println("City: " + customer.getCity());
-                System.out.println("Email: " + customer.getEmail());
-                System.out.println("Phone Number: " + customer.getPhoneNumber());
 
                 orders.add(order);
             }
@@ -129,22 +123,29 @@ public class OrderMapper {
 
     public Order getOrderById(int orderId) throws SQLException {
         String sql = """
-        SELECT 
-            o.order_id, 
-            o.status, 
-            o.order_date, 
-            o.carport_height,
-            o.carport_width,
-            o.carport_length,
-            o.order_price,
-            c.name AS customer_name, 
-            s.salesperson_id, 
-            s.name AS salesperson_name 
-        FROM orders o 
-        LEFT JOIN customer c ON o.customer_number = c.phone_number 
-        LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id
-        WHERE o.order_id = ?;
-        """;
+                SELECT\s
+                           o.order_id,\s
+                           o.status,\s
+                           o.order_date,\s
+                           o.carport_height,
+                           o.carport_width,
+                           o.carport_length,
+                           o.order_price,
+                           c.name AS customer_name,\s
+                           c.address AS customer_address,
+                           c.zip AS customer_zip,
+                           c.email AS customer_email,
+                           c.phone_number AS customer_phone,
+                           ci.city_name AS customer_city,
+                           s.salesperson_id,\s
+                           s.name AS salesperson_name\s
+                       FROM orders o\s
+                       LEFT JOIN customer c ON o.customer_number = c.phone_number\s
+                       LEFT JOIN city ci ON c.zip = ci.zip
+                       LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id
+                       WHERE o.order_id = ?;
+                
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -164,6 +165,11 @@ public class OrderMapper {
                     // Set customer
                     Customer customer = new Customer();
                     customer.setName(rs.getString("customer_name"));
+                    customer.setAddress(rs.getString("customer_address"));
+                    customer.setZip(rs.getInt("customer_zip"));
+                    customer.setEmail(rs.getString("customer_email"));
+                    customer.setPhoneNumber(rs.getInt("customer_phone"));
+                    customer.setCity(rs.getString("customer_city"));
                     order.setCustomer(customer);
 
                     // Set salesperson
@@ -293,4 +299,15 @@ public class OrderMapper {
             throw new DatabaseException("Could not insert orderline into database", e.getMessage());
         }
     }
+
+    public void updateOrderPrice(int orderId, double newPrice) throws SQLException {
+        String sql = "UPDATE orders SET order_price = ? WHERE order_id = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, newPrice);
+            stmt.setInt(2, orderId);
+            stmt.executeUpdate();
+        }
+    }
+
 }

@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS public.orders
     svg text,
     order_price numeric(10, 2) NOT NULL,
     note character varying,
-    start_price integer NOT NULL,
+    cost_price numeric(10, 2) NOT NULL,
     PRIMARY KEY (order_id)
 );
 
@@ -316,7 +316,7 @@ VALUES
 
 -- Inserts three orders where only one have added a shed
 
-INSERT INTO public.orders (customer_number, salesperson_id, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_date, delivery_date, order_price, start_price, svg)
+INSERT INTO public.orders (customer_number, salesperson_id, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_date, delivery_date, order_price, cost_price, svg)
 VALUES
     (55512345, 1, 230, 300, 500, null, null, 'Ny ordre', '2025-05-16', null, 20000, 20000,
      '<svg version="1.1" x="0" y="0" viewBox="0 0 300 500" width="300px" height="500px" preserveAspectRatio="xMinYMin">
