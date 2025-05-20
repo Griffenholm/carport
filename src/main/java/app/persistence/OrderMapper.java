@@ -346,6 +346,15 @@ public class OrderMapper {
             stmt.executeUpdate();
         }
     }
+    public void updateOrderStatus(int orderId, String newStatus) throws SQLException {
+        String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newStatus);
+            stmt.setInt(2, orderId);
+            stmt.executeUpdate();
+        }
+    }
 
 
 }

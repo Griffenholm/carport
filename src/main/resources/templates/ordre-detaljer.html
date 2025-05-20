@@ -93,8 +93,8 @@
                     <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
                 </a>
             </div>
-            <nav>
-                <a th:href="@{/admin/orders}">Ordrer</a>
+            <nav class="admin-nav">
+                <a th:href="@{/admin/alle-ordrer}">Alle ordrer</a>
             </nav>
             <div class="header-logout" style="margin-left:auto;">
                 <a th:href="@{/logout}">Log ud</a>
@@ -104,6 +104,10 @@
 </div>
 
 <main>
+    <div th:if="${message}" class="success-message">
+        <p th:text="${message}">Tilbud sendt til kunden.</p>
+    </div>
+
     <div class="container">
         <p>Sælger: <span
                 th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span>
@@ -188,8 +192,9 @@
                              style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
                     </button>
 
-                    <button type="submit">Vis preview og send til kunden</button>
-                    </div>
+                        <a th:href="@{/admin/ordre/preview/{id}(id=${order.orderId})}" class="button">
+                            Vis endelig ordre og send til kunden →
+                        </a>
                 </div>
             </form>
         </section>

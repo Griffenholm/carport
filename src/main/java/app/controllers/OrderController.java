@@ -44,6 +44,18 @@ public class OrderController {
         });
         app.post("/admin/update-order", this::updateFullOrder);
 
+        app.get("/admin/ordre/preview/{id}", ctx -> {
+            int orderId = Integer.parseInt(ctx.pathParam("id"));
+            Order order = orderMapper.getOrderById(orderId);
+            ctx.attribute("order", order);
+            ctx.render("ordre-oversigt.html");
+        });
+        app.post("/admin/ordre/send", ctx -> {
+            int orderId = Integer.parseInt(ctx.formParam("orderId"));
+            orderMapper.updateOrderStatus(orderId, "Sendt til kunde");
+            ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
+            ctx.redirect("/admin/alle-ordrer");
+        });
     }
 
     private void handleOrder(Context ctx) {
@@ -198,6 +210,13 @@ public class OrderController {
             if (orders == null) {
                 orders = new ArrayList<>();
             }
+            // Get message from session and send to Thymeleaf
+            String message = ctx.sessionAttribute("message");
+            if (message != null) {
+                ctx.attribute("message", message);
+                ctx.sessionAttribute("message", null); // remove after viewing
+            }
+
             ctx.attribute("orders", orders);
             ctx.render("alle-ordrer.html");
         } catch (SQLException e) {
@@ -205,6 +224,8 @@ public class OrderController {
             ctx.status(500).result("Fejl ved hentning af ordrer.");
         }
     }
+
+
     private void showOrderDetails(Context ctx) {
         try {
             int orderId = Integer.parseInt(ctx.pathParam("id"));

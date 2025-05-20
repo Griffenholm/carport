@@ -19,9 +19,10 @@
                     <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
                 </a>
             </div>
-            <nav>
-                <a th:href="@{/admin/orders}">Ordrer</a>
+            <nav class="admin-nav">
+                <a th:href="@{/admin/alle-ordrer}">Alle ordrer</a>
             </nav>
+
             <div class="header-logout" style="margin-left:auto;">
                 <a th:href="@{/logout}">Log ud</a>
             </div>
@@ -31,6 +32,11 @@
 
 <main>
     <div class="container">
+        <!--Message for seller when order has been sent -->
+        <div th:if="${message}" class="success-message">
+            <p th:text="${message}">Tilbuddet er sendt til kunden.</p>
+        </div>
+
         <h1>Hej <span th:text="${adminName}">Sælger</span></h1>
         <section class="orders-section">
             <!-- Sub-heading + search -->
@@ -43,8 +49,7 @@
                 <form th:action="@{/admin/orders}" method="get"
                       class="search-form"
                       style="display:flex; align-items:center; gap:0.5rem;">
-                    <input type="search" name="search" placeholder="Søg"/>
-                    <button type="submit">🔍</button>
+                    <input type="search" name="search" placeholder="🔍 Søg"/>
                 </form>
             </div>
 
