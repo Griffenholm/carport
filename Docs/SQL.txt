@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS public.orders
     svg text,
     order_price numeric(10, 2) NOT NULL,
     note character varying,
-    start_price integer NOT NULL,
+    cost_price numeric(10, 2) NOT NULL,
     PRIMARY KEY (order_id)
 );
 
@@ -303,5 +303,67 @@ VALUES  (9),
         (19),
         (20),
         (21);
+
+
+-- Inserts three new customers
+
+INSERT INTO public.customer (phone_number, name, address, zip, email)
+VALUES
+    (55512345, 'Mikkel Møller', 'Skovvej 12', 4000, 'mikkel@mail.dk'),
+    (55523456, 'Lene Larsen', 'Bakkevej 7', 3600, 'lene@mail.dk'),
+    (55534567, 'Anders Andersen', 'Strandvej 3', 3400, 'anders@mail.dk');
+
+
+-- Inserts three orders where only one have added a shed
+
+INSERT INTO public.orders (customer_number, salesperson_id, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_date, delivery_date, order_price, cost_price, svg)
+VALUES
+    (55512345, 1, 230, 300, 500, null, null, 'Ny ordre', '2025-05-16', null, 20000, 20000,
+     '<svg version="1.1" x="0" y="0" viewBox="0 0 300 500" width="300px" height="500px" preserveAspectRatio="xMinYMin">
+         <defs>
+             <marker id="beginArrow" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
+                 <path d="M0,6 L12,0 L12,12 L0,6" style="fill: #000000;" />
+             </marker>
+             <marker id="endArrow" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto">
+                 <path d="M0,0 L12,6 L0,12 L0,0" style="fill: #000000;" />
+             </marker>
+         </defs>
+         <rect x="0" y="0" height="500" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <rect x="0" y="35" height="5" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <rect x="0" y="465" height="5" width="300" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+     </svg>'),
+
+    (55523456, 2, 230, 320, 550, null, null, 'Ny ordre', '2025-05-17', null, 25000, 25000,
+     '<svg version="1.1" x="0" y="0" viewBox="0 0 320 550" width="320px" height="550px" preserveAspectRatio="xMinYMin">
+         <defs>
+             <marker id="beginArrow" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
+                 <path d="M0,6 L12,0 L12,12 L0,6" style="fill: #000000;" />
+             </marker>
+             <marker id="endArrow" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto">
+                 <path d="M0,0 L12,6 L0,12 L0,0" style="fill: #000000;" />
+             </marker>
+         </defs>
+         <rect x="0" y="0" height="550" width="320" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <rect x="0" y="35" height="5" width="320" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <rect x="0" y="515" height="5" width="320" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+     </svg>'),
+
+    (55534567, 2, 230, 350, 600, 150, 300, 'Ny ordre', '2025-05-18', null, 35000, 35000,
+     '<svg version="1.1" x="0" y="0" viewBox="0 0 350 600" width="350px" height="600px" preserveAspectRatio="xMinYMin">
+         <defs>
+             <marker id="beginArrow" markerWidth="12" markerHeight="12" refX="0" refY="6" orient="auto">
+                 <path d="M0,6 L12,0 L12,12 L0,6" style="fill: #000000;" />
+             </marker>
+             <marker id="endArrow" markerWidth="12" markerHeight="12" refX="12" refY="6" orient="auto">
+                 <path d="M0,0 L12,6 L0,12 L0,0" style="fill: #000000;" />
+             </marker>
+         </defs>
+         <rect x="0" y="0" height="600" width="350" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <rect x="0" y="35" height="5" width="350" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <rect x="0" y="565" height="5" width="350" style="stroke-width:2px; stroke:#000000; fill: #ffffff" />
+         <!-- Skur -->
+         <rect x="100" y="300" height="300" width="150" style="stroke-width:2px; stroke:#000000; fill: #bbbbbb" />
+     </svg>');
+
 
 COMMIT;

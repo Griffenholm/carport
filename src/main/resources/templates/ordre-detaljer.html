@@ -1,29 +1,141 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>FOG carport bestilling</title>
-    <link rel="icon" href="/images/fogfavicon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-</head>
+<!-- se siden her: http://localhost:7070/admin/ordre/1 -->
 
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ordredetaljer</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png"/>
+    <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
+
+    <script>
+        function toggleShedFields() {
+            const shedToggle = document.getElementById('shedToggle');
+            const shedFields = document.getElementById('shedFields');
+            if (shedToggle.value === 'with') {
+                shedFields.style.display = 'block';
+            } else {
+                shedFields.style.display = 'none';
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", function () {
+            toggleShedFields();
+        });
+
+        function updateSketch() {
+            const form = document.getElementById("carportForm");
+            const formData = new FormData(form);
+
+            fetch("/update-sketch", {
+                method: "POST",
+                body: formData,
+            })
+                .then(response => response.text())
+                .then(svg => {
+                    document.querySelector(".carport-svg-topview > div").innerHTML = svg;
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    </script>
+
+</head>
 <body>
 <div class="container">
-    <h1>Ordre Detaljer</h1>
-
-    <h2>Ordre ID: <span th:text="${order.orderId}">0000</span></h2>
-    <p>Status: <span th:text="${order.status}">Ingen status</span></p>
-    <p>Ordredato: <span th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</span></p>
-    <p>Kunde: <span th:text="${order.customer.name}">Ukendt kunde</span></p>
-    <p>Sælger: <span th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span></p>
-    <p>Carport Højde: <span th:text="${order.carportHeight}">0</span></p>
-    <p>Carport Bredde: <span th:text="${order.carportWidth}">0</span></p>
-    <p>Carport Længde: <span th:text="${order.carportLength}">0</span></p>
-    <p>Pris: <span th:text="${order.price}">0</span> DKK</p>
-
-    <a href="/admin/alle-ordrer">Tilbage til alle ordrer</a>
+    <header>
+        <div class="container header-content">
+            <div class="header-logo">
+                <a href="/" th:href="@{/}">
+                    <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
+                </a>
+            </div>
+            <nav>
+                <a th:href="@{/admin/orders}">Ordrer</a>
+            </nav>
+            <div class="header-logout" style="margin-left:auto;">
+                <a th:href="@{/logout}">Log ud</a>
+            </div>
+        </div>
+    </header>
 </div>
+
+<main>
+    <div class="container">
+        <p>Sælger: <span
+                th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span>
+        </p>
+
+        <section class="orders-section">
+            <h1 th:text="${order.customer.name}">Kundenavn</h1>
+            <p th:text="${order.customer.address}">Adresse</p>
+            <p th:text="${order.customer.zip} + ' ' + ${order.customer.city}">Postnummer og by</p>
+            <p th:text="'Tlf: ' + ${order.customer.phoneNumber}">Telefon</p>
+            <p th:text="'Email: ' + ${order.customer.email}">Email</p>
+
+            <p>Ordre nr: <span th:text="${order.orderId}">0000</span></p>
+            <p>Status: <span th:text="${order.status}">Status</span></p>
+            <p th:text="'Ordredato: ' + ${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">
+                Ordredato</p>
+
+            <!-- Carport form -->
+            <form id="order-form" th:action="@{/admin/update-order}" method="post">
+                <div class="form-section">
+                    <h2>Carport</h2>
+                    <label>Carport bredde
+                        <input type="number" name="carportWidth" th:value="${order.carportWidth}" required/>
+                    </label>
+                    <label>Carport længde
+                        <input type="number" name="carportLength" th:value="${order.carportLength}" required/>
+                    </label>
+                    <label>Carport bredde
+                        <input type="number" name="carportHeight" th:value="${order.carportHeight}" required/>
+                    </label>
+
+                    <!-- Shed Section -->
+                    <div class="form-section">
+                        <h2>Skur</h2>
+                        <label>Redskabsrum
+                            <select id="shedToggle" name="shedToggle" onchange="toggleShedFields()">
+                                <option value="none" selected>Uden redskabsrum</option>
+                                <option value="with">Med redskabsrum</option>
+                            </select>
+                        </label>
+                        <div id="shedFields" class="form-subsection" style="display: none;">
+                            <label>Redskabsrum bredde
+                                <input type="number" name="shedWidth" placeholder="Angiv bredde i cm"/>
+                            </label>
+                            <label>Redskabsrum længde
+                                <input type="number" name="shedLength" placeholder="Angiv længde i cm"/>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Skitse -->
+                    <div class="sketch-section">
+                        <h2>Skitse</h2>
+                        <img id="carport-sketch" src="" alt="Carport skitse"/>
+                        <button type="button" onclick="updateSketch()">Opdater skitse</button>
+                    </div>
+
+                    <p>Vejledende pris: <span th:text="${order.costPrice} + ' kr.'">0000 kr</span></p>
+                    <form method="post" th:action="@{/admin/ordre/opdater}">
+                        <input type="hidden" name="orderId" th:value="${order.orderId}"/>
+
+                        <label for="orderPrice">Endelig pris:</label>
+                        <input type="number" id="orderPrice" name="orderPrice" th:value="${order.price}" required/>
+
+                        <button type="submit">Gem</button>
+                    </form>
+
+                    <!-- Save button -->
+                    <button type="submit">Gem ordre</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</main>
 
 <footer>
     <div class="container footer-container">

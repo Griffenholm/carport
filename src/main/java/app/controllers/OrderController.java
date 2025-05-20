@@ -42,6 +42,7 @@ public class OrderController {
                 ctx.redirect("/");
             }
         });
+        app.post("/admin/ordre/opdater", this::updateOrderPrice);
     }
 
     private void handleOrder(Context ctx) {
@@ -229,4 +230,17 @@ public class OrderController {
             ctx.status(500).result("Fejl ved hentning af ordre.");
         }
     }
+
+    private void updateOrderPrice(Context ctx) {
+        try {
+            int orderId = Integer.parseInt(ctx.formParam("orderId"));
+            double newPrice = Double.parseDouble(ctx.formParam("orderPrice"));
+            orderMapper.updateOrderPrice(orderId, newPrice);
+            ctx.redirect("/admin/ordre/" + orderId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(400).result("Kunne ikke opdatere prisen.");
+        }
+    }
+
 }
