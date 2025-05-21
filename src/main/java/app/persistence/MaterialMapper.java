@@ -20,7 +20,7 @@ public class MaterialMapper
         this.connectionPool = connectionPool;
     }
 
-    public List<Variant> getMaterialVariantsByMaterialIdAndMinLength(int minLength, int materialId) throws DatabaseException
+    public List<Variant> getMaterialVariantsByMaterialIdAndMinLength(int minLength, int materialId, ConnectionPool connectionPool) throws DatabaseException
     {
         List<Variant> variants = new ArrayList<>();
         String sql = "SELECT * FROM variant " +

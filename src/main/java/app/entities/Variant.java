@@ -22,6 +22,12 @@ public class Variant {
         this.material = material;
     }
 
+    //Contructor for testing, I only need the length in the object
+    public Variant (int length)
+    {
+        this.length = length;
+    }
+
     public int getVariantId() {
         return variantId;
     }
