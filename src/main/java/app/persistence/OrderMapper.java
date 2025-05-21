@@ -67,23 +67,23 @@ public class OrderMapper {
     public List<Order> getAllOrdersForSalesPerson() throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = """
-                SELECT\s
-                    o.order_id,\s
-                    o.status,\s
-                    o.order_date,\s
-                    c.name AS customer_name,\s
-                    c.address AS customer_address,
-                    c.zip AS customer_zip,
-                    ci.city_name AS customer_city,
-                    c.email AS customer_email,
-                    c.phone_number AS customer_phone_number,
-                    s.salesperson_id,\s
-                    s.name AS salesperson_name
-                FROM orders o\s
-                LEFT JOIN customer c ON o.customer_number = c.phone_number
-                LEFT JOIN city ci ON c.zip = ci.zip
-                LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
-                """;
+            SELECT
+                o.order_id,
+                o.status,
+                o.order_date,
+                c.name AS customer_name,
+                c.address AS customer_address,
+                c.zip AS customer_zip,
+                ci.city_name AS customer_city,
+                c.email AS customer_email,
+                c.phone_number AS customer_phone_number,
+                s.salesperson_id,
+                s.name AS salesperson_name
+            FROM orders o
+            LEFT JOIN customer c ON o.customer_number = c.phone_number
+            LEFT JOIN city ci ON c.zip = ci.zip
+            LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
+            """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -123,24 +123,28 @@ public class OrderMapper {
 
     public Order getOrderById(int orderId) throws SQLException {
         String sql = """
-                SELECT\s
-                           o.order_id,\s
-                           o.status,\s
-                           o.order_date,\s
+                SELECT
+                           o.order_id,
+                           o.status,
+                           o.order_date,
                            o.carport_height,
                            o.carport_width,
                            o.carport_length,
+                           o.shed_width,
+                           o.shed_length,
+                           o.svg,
                            o.order_price,
-                           c.name AS customer_name,\s
+                           o.cost_price,
+                           c.name AS customer_name,
                            c.address AS customer_address,
                            c.zip AS customer_zip,
                            c.email AS customer_email,
                            c.phone_number AS customer_phone,
                            ci.city_name AS customer_city,
-                           s.salesperson_id,\s
-                           s.name AS salesperson_name\s
-                       FROM orders o\s
-                       LEFT JOIN customer c ON o.customer_number = c.phone_number\s
+                           s.salesperson_id,
+                           s.name AS salesperson_name
+                       FROM orders o
+                       LEFT JOIN customer c ON o.customer_number = c.phone_number
                        LEFT JOIN city ci ON c.zip = ci.zip
                        LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id
                        WHERE o.order_id = ?;
@@ -160,7 +164,21 @@ public class OrderMapper {
                     order.setCarportHeight(rs.getInt("carport_height"));
                     order.setCarportWidth(rs.getInt("carport_width"));
                     order.setCarportLength(rs.getInt("carport_length"));
+                    order.setSvg(rs.getString("svg"));
                     order.setPrice(rs.getInt("order_price"));
+                    order.setCostPrice(rs.getInt("cost_price"));
+                    order.setCarportWidth(rs.getInt("carport_width"));
+                    order.setCarportLength(rs.getInt("carport_length"));
+
+                    // Shed - only if it is not null
+                    int shedWidth = rs.getInt("shed_width");
+                    if (!rs.wasNull()) {
+                        order.setShedWidth(shedWidth);
+                    }
+                    int shedLength = rs.getInt("shed_length");
+                    if (!rs.wasNull()) {
+                        order.setShedLength(shedLength);
+                    }
 
                     // Set customer
                     Customer customer = new Customer();
@@ -300,14 +318,43 @@ public class OrderMapper {
         }
     }
 
-    public void updateOrderPrice(int orderId, double newPrice) throws SQLException {
-        String sql = "UPDATE orders SET order_price = ? WHERE order_id = ?";
+    public void updateFullOrder(Order order) throws SQLException {
+        String sql = """
+        UPDATE orders SET 
+            carport_height = ?, 
+            carport_width = ?, 
+            carport_length = ?, 
+            shed_width = ?, 
+            shed_length = ?, 
+            order_price = ?, 
+            svg = ?
+        WHERE order_id = ?
+        """;
+
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setDouble(1, newPrice);
+
+            stmt.setInt(1, order.getCarportHeight());
+            stmt.setInt(2, order.getCarportWidth());
+            stmt.setInt(3, order.getCarportLength());
+            stmt.setObject(4, order.getShedWidth() != 0 ? order.getShedWidth() : null, Types.INTEGER);
+            stmt.setObject(5, order.getShedLength() != 0 ? order.getShedLength() : null, Types.INTEGER);
+            stmt.setDouble(6, order.getPrice());
+            stmt.setString(7, order.getSvg());
+            stmt.setInt(8, order.getOrderId());
+
+            stmt.executeUpdate();
+        }
+    }
+    public void updateOrderStatus(int orderId, String newStatus) throws SQLException {
+        String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, newStatus);
             stmt.setInt(2, orderId);
             stmt.executeUpdate();
         }
     }
+
 
 }

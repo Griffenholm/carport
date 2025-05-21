@@ -14,6 +14,7 @@
         function toggleShedFields() {
             const shedToggle = document.getElementById('shedToggle');
             const shedFields = document.getElementById('shedFields');
+
             if (shedToggle.value === 'with') {
                 shedFields.style.display = 'block';
             } else {
@@ -22,7 +23,17 @@
         }
 
         window.addEventListener("DOMContentLoaded", function () {
+            // Toggle
             toggleShedFields();
+
+            // If shed-fields have values, the shed is automatically shown
+            const shedWidth = document.querySelector('input[name="shedWidth"]');
+            const shedLength = document.querySelector('input[name="shedLength"]');
+
+            if (shedWidth && shedLength && (shedWidth.value !== "" && shedWidth.value !== "0") && (shedLength.value !== "" && shedLength.value !== "0")) {
+                document.getElementById("shedToggle").value = "with";
+                document.getElementById("shedFields").style.display = "block";
+            }
         });
 
         function updateSketch() {
@@ -39,6 +50,37 @@
                 })
                 .catch(error => console.error("Error:", error));
         }
+
+            function calculateProfitAndMargin() {
+            const price = parseFloat(document.getElementById("orderPrice").value.replace(",", "."));
+            const costPrice = parseFloat(document.getElementById("costPriceDisplay").innerText.replace(" kr", "").replace(",", "."));
+
+            if (!isNaN(price) && !isNaN(costPrice) && costPrice > 0) {
+            const profit = price - costPrice;
+            const margin = (profit / price) * 100;
+
+            document.getElementById("profitDisplay").innerText = profit.toFixed(2) + " kr";
+            document.getElementById("marginDisplay").innerText = margin.toFixed(1) + " %";
+        } else {
+            document.getElementById("profitDisplay").innerText = "0 kr";
+            document.getElementById("marginDisplay").innerText = "0%";
+        }
+        }
+
+            document.addEventListener("DOMContentLoaded", () => {
+            // initial calculation
+            calculateProfitAndMargin();
+
+            // calculate again when price is changed
+            document.getElementById("orderPrice").addEventListener("input", calculateProfitAndMargin);
+        });
+
+
+    window.addEventListener("DOMContentLoaded", function () {
+    toggleShedFields(); // hvis du allerede bruger denne
+    updateProfitAndMargin(); // start beregning
+    });
+
     </script>
 
 </head>
@@ -51,8 +93,8 @@
                     <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
                 </a>
             </div>
-            <nav>
-                <a th:href="@{/admin/orders}">Ordrer</a>
+            <nav class="admin-nav">
+                <a th:href="@{/admin/alle-ordrer}">Alle ordrer</a>
             </nav>
             <div class="header-logout" style="margin-left:auto;">
                 <a th:href="@{/logout}">Log ud</a>
@@ -62,6 +104,10 @@
 </div>
 
 <main>
+    <div th:if="${message}" class="success-message">
+        <p th:text="${message}">Tilbud sendt til kunden.</p>
+    </div>
+
     <div class="container">
         <p>Sælger: <span
                 th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span>
@@ -80,7 +126,7 @@
                 Ordredato</p>
 
             <!-- Carport form -->
-            <form id="order-form" th:action="@{/admin/update-order}" method="post">
+            <form id="carportForm" th:action="@{/admin/update-order}" method="post">
                 <div class="form-section">
                     <h2>Carport</h2>
                     <label>Carport bredde
@@ -104,33 +150,51 @@
                         </label>
                         <div id="shedFields" class="form-subsection" style="display: none;">
                             <label>Redskabsrum bredde
-                                <input type="number" name="shedWidth" placeholder="Angiv bredde i cm"/>
+                                <input type="number" name="shedWidth" th:value="${order.shedWidth}" placeholder="Angiv bredde i cm"/>
                             </label>
                             <label>Redskabsrum længde
-                                <input type="number" name="shedLength" placeholder="Angiv længde i cm"/>
+                                <input type="number" name="shedLength" th:value="${order.shedLength}" placeholder="Angiv længde i cm"/>
                             </label>
                         </div>
                     </div>
 
-                    <!-- Skitse -->
+                    <!-- Sketch section -->
                     <div class="sketch-section">
                         <h2>Skitse</h2>
-                        <img id="carport-sketch" src="" alt="Carport skitse"/>
-                        <button type="button" onclick="updateSketch()">Opdater skitse</button>
+                        <button type="button" onclick="updateSketch()">
+                            Opdater skitse
+                            <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon"
+                                 style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                        </button>
+                        <h3>Carporten set ovenfra med spær</h3>
+                        <div class="carport-svg-topview">
+                            <div th:utext="${svg}"></div>
+                        </div>
                     </div>
 
-                    <p>Vejledende pris: <span th:text="${order.costPrice} + ' kr.'">0000 kr</span></p>
-                    <form method="post" th:action="@{/admin/ordre/opdater}">
+                    <div class="price-section">
+                    <p>Vejledende pris: <span th:text="${order.price} + ' kr.'">0000 kr</span></p>
                         <input type="hidden" name="orderId" th:value="${order.orderId}"/>
 
                         <label for="orderPrice">Endelig pris:</label>
                         <input type="number" id="orderPrice" name="orderPrice" th:value="${order.price}" required/>
 
-                        <button type="submit">Gem</button>
-                    </form>
+                        <!-- Material cost -->
+                        <p>Pris på materialer: <span id="costPriceDisplay" th:text="${order.costPrice} + ' kr'">0 kr</span></p>
 
-                    <!-- Save button -->
-                    <button type="submit">Gem ordre</button>
+                        <!-- Calculator -->
+                        <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
+                        <p>Dækningsgrad: <span id="marginDisplay">0%</span></p>
+
+                        <!-- Save button -->
+                        <button type="submit">Gem ændringerne
+                        <img src="../public/images/save_icon.png" th:src="@{/images/save_icon.png}" alt="Ikon"
+                             style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                    </button>
+
+                        <a th:href="@{/admin/ordre/preview/{id}(id=${order.orderId})}" class="button">
+                            Vis endelig ordre og send til kunden →
+                        </a>
                 </div>
             </form>
         </section>

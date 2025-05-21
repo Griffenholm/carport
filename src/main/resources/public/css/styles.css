@@ -64,7 +64,7 @@ input, select {
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-button {
+button, a.button {
     background-color: #003f7d;
     color: white;
     border: none;
@@ -81,6 +81,16 @@ button {
     gap: 8px;
     width: fit-content;
     box-sizing: border-box;
+    text-decoration: none;
+}
+
+.success-message {
+    background-color: #e7f4e4;
+    color: #2d662d;
+    padding: 10px 20px;
+    border: 1px solid #b5ddb1;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
 /* Hover over information in table */
@@ -197,6 +207,19 @@ nav a {
 .orders-table td:first-child {
     width: 40px;             /* reserve room for the status bullet */
     text-align: center;      /* center the bullet */
+}
+
+/* Admin navigation menu */
+.admin-nav {
+    display: flex;
+    gap: 2.5rem;
+}
+.admin-nav a {
+    font-weight: bold;
+    text-decoration: none;
+}
+.admin-nav a:hover {
+    color: #003f7d;
 }
 
 /* Footer */
