@@ -62,6 +62,39 @@
                 })
                 .catch(error => console.error("Error:", error));
         }
+        function updatePrice() {
+            const width = document.querySelector('input[name="carportWidth"]').value;
+            const length = document.querySelector('input[name="carportLength"]').value;
+
+            if (width && length && width > 0 && length > 0) {
+                const formData = new FormData();
+                formData.append("width", width);
+                formData.append("length", length);
+
+                fetch("/api/calculate-price", {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.price !== undefined) {
+                            document.getElementById("live-price").innerText = data.price.toFixed(2) + " kr";
+                        } else {
+                            document.getElementById("live-price").innerText = "Ugyldige mål";
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById("live-price").innerText = "Beregning fejlede";
+                    });
+            } else {
+                document.getElementById("live-price").innerText = "Indtast mål for at få din pris";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelector('input[name="carportWidth"]').addEventListener("input", updatePrice);
+            document.querySelector('input[name="carportLength"]').addEventListener("input", updatePrice);
+        });
 
     </script>
 
@@ -171,9 +204,7 @@
 
             <div class="price-section">
                 <h2>Vejledende pris:</h2>
-                <p>
-                    <strong th:text="${price != null} ? ${price + ' kr'} : 'Indtast mål for at få din pris'"></strong>
-                </p>
+                <p><strong id="live-price">Indtast mål for at få din pris</strong></p>
                 <p>Når du bestiller et tilbud kigger vores specialister med over 25 års erfaring din carport igennem og
                     kontakter dig med et endeligt tilbud som du skal godkende. Dernæst sender vi dig din helt nye
                     carport.</p>

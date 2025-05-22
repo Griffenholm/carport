@@ -25,6 +25,7 @@ public class Calculator
         this.width = width;
         this.length = length;
         this.connectionPool = connectionPool;
+        this.materialMapper = new MaterialMapper(connectionPool);
     }
 
 

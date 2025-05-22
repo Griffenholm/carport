@@ -56,6 +56,7 @@ public class OrderController {
             ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
             ctx.redirect("/admin/alle-ordrer");
         });
+
     }
 
     private void handleOrder(Context ctx) {
