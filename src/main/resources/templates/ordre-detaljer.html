@@ -172,6 +172,40 @@
                             <div th:utext="${svg}"></div>
                         </div>
                     </div>
+
+                    <!-- Material list -->
+                    <div class="material-list-section">
+                        <h2>Materialeliste</h2>
+                        <table class="material-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Materiale</th>
+                                <th>Længde</th>
+                                <th>Bredde</th>
+                                <th>Højde</th>
+                                <th>Enhed</th>
+                                <th>Antal</th>
+                                <th>Pris</th>
+                                <th>Beskrivelse</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="orderline : ${orderlines}">
+                                <td th:text="${orderline.variant.material.materialId}"></td>
+                                <td th:text="${orderline.variant.material.name}"></td>
+                                <td th:text="${orderline.variant.length} + ' cm'"></td>
+                                <td th:text="${orderline.variant.material.width} + ' mm'"></td>
+                                <td th:text="${orderline.variant.material.height} + ' mm'"></td>
+                                <td th:text="${orderline.variant.material.unit}"></td>
+                                <td th:text="${orderline.quantity}"></td>
+                                <td th:text="${#numbers.formatDecimal(orderline.orderlinePrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"></td>
+                                <td th:text="${orderline.buildDescription}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                     <!--Price section -->
                     <div class="price-section">
                         <p>Vejledende pris: <span th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 2, 'POINT')} + ' kr'">0000 kr</span> </p>

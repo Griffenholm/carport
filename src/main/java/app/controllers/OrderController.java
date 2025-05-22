@@ -239,8 +239,11 @@ public class OrderController {
             int orderId = Integer.parseInt(ctx.pathParam("id"));
             Order order = orderMapper.getOrderById(orderId);
             if (order != null) {
+                List<Orderline> orderlines = orderMapper.getOrderlinesForOrder(orderId);
                 ctx.attribute("order", order);
+                ctx.attribute("orderlines", orderlines);
                 ctx.attribute("svg", order.getSvg());
+
                 ctx.render("ordre-detaljer.html");
             } else {
                 ctx.status(404).result("Ordre ikke fundet");

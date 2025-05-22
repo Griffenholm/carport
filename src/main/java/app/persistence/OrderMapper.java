@@ -357,4 +357,52 @@ public class OrderMapper {
     }
 
 
+    public List<Orderline> getOrderlinesForOrder(int orderId) throws SQLException {
+        List<Orderline> orderlines = new ArrayList<>();
+        String sql = """
+                SELECT o.orderline_id, o.quantity, o.build_description, o.orderline_price,
+                       v.variant_id, v.length,
+                       m.material_id, m.name, m.price, m.unit, m.width, m.height
+                FROM orderline o
+                JOIN variant v ON o.variant_id = v.variant_id
+                JOIN material m ON v.material_id = m.material_id
+                WHERE o.order_id = ?
+                """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Material material = new Material(
+                        rs.getInt("material_id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        rs.getString("unit"),
+                        rs.getInt("quantity"),
+                        rs.getInt("width"),
+                        rs.getInt("height")
+                );
+
+                Variant variant = new Variant(
+                        rs.getInt("variant_id"),
+                        rs.getInt("length"),
+                        material
+                );
+
+                Orderline orderline = new Orderline(
+                        rs.getInt("orderline_id"),
+                        null, // Order will be set later
+                        variant,
+                        rs.getInt("quantity"),
+                        rs.getString("build_description"),
+                        rs.getDouble("orderline_price")
+                );
+                orderlines.add(orderline);
+            }
+        }
+
+        return orderlines;
+    }
+
 }
