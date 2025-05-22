@@ -181,6 +181,7 @@
 
                         <!-- Material cost -->
                         <p>Pris på materialer: <span id="costPriceDisplay" th:text="${order.costPrice} + ' kr'">0 kr</span></p>
+                        <input type="hidden" name="costPrice" th:value="${order.costPrice}" />
 
                         <!-- Calculator -->
                         <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
