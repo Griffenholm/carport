@@ -25,11 +25,16 @@ public class MaterialController {
             Order dummyOrder = new Order(); // temporary empty order object
             calculator.calcCarport(dummyOrder);
 
-            double totalPrice = calculator.getOrderlines().stream()
+            double costPrice = calculator.getOrderlines().stream()
                     .mapToDouble(Orderline::getOrderlinePrice)
                     .sum();
 
-            ctx.json(Map.of("price", totalPrice));
+            double salesPrice = costPrice * 5; // suggested price = 5x cost
+
+            ctx.json(Map.of(
+                    "price", Math.round(salesPrice * 100.0) / 100.0,
+                    "costPrice", Math.round(costPrice * 100.0) / 100.0
+            ));
 
         } catch (NumberFormatException | DatabaseException e) {
             ctx.status(400).json(Map.of("error", "Ugyldige input eller databasefejl"));

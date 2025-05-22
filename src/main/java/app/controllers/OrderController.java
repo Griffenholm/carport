@@ -6,6 +6,7 @@ import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
 import app.services.CarportSvg;
+import app.services.Calculator;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -19,8 +20,10 @@ public class OrderController {
     private final OrderMapper orderMapper;
     private final UserMapper userMapper;
     private final CarportMapper carportMapper;
+    private final ConnectionPool connectionPool;
 
     public OrderController(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
         this.orderMapper = new OrderMapper(connectionPool);
         this.userMapper = new UserMapper(connectionPool);
         this.carportMapper = new CarportMapper(connectionPool);
@@ -113,7 +116,8 @@ public class OrderController {
             Order order = new Order();
             order.setCustomer(customer);
             order.setCarport(carport);
-            order.setPrice(25000);  // Hardcoded price. TODO: add dynamic price calculation
+            Calculator calculator = new Calculator(carportWidth, carportLength, connectionPool);
+            calculator.calculateAndSetPrices(order);
             order.setStatus("Ny ordre");
             order.setDeliveryDate(null);
             order.setSalesperson(salesperson);
@@ -127,6 +131,9 @@ public class OrderController {
             order.setSvg(svgString);
             // Sæt ordredatoen automatisk til dags dato
             order.setOrderDate(LocalDate.now());
+
+            System.out.println("Beregnet costPrice: " + order.getCostPrice());
+            System.out.println("Beregnet pris til kunde: " + order.getPrice());
 
             orderMapper.saveOrder(order);
 

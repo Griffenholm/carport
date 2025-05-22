@@ -78,7 +78,13 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.price !== undefined) {
-                            document.getElementById("live-price").innerText = data.price.toFixed(2) + " kr";
+                            const formatted = data.price.toLocaleString("da-DK", {
+                                style: "currency",
+                                currency: "DKK",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                            document.getElementById("live-price").innerText = formatted;
                         } else {
                             document.getElementById("live-price").innerText = "Ugyldige mål";
                         }

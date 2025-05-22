@@ -42,7 +42,7 @@ public class OrderMapper {
             stmt.setObject(6, order.getShedLength() != 0 ? order.getShedLength() : null, java.sql.Types.INTEGER);
             stmt.setString(7, order.getStatus());
             stmt.setDouble(8, order.getPrice());
-            stmt.setDouble(9, order.getPrice()); // Assuming cost price is the same as order price for now
+            stmt.setDouble(9, order.getCostPrice());
             // Set salesperson ID directly from the order
             stmt.setInt(10, order.getSalesperson().getSalespersonId());
             // Set SVG if it exists, otherwise set it to null
