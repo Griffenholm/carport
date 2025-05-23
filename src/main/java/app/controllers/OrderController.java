@@ -84,7 +84,7 @@ public class OrderController {
         // Admin logout
         app.get("/logout", ctx -> {
             ctx.req().getSession().invalidate();
-            ctx.redirect("/");
+            ctx.redirect("/login");
         });
     }
 
@@ -255,7 +255,9 @@ public class OrderController {
                 ctx.sessionAttribute("message", null); // remove after viewing
             }
             ctx.attribute("orders", orders);
+            addAdminNameAttribute(ctx); // Admin name
             ctx.render("alle-ordrer.html");
+
         } catch (SQLException e) {
             e.printStackTrace();
             ctx.status(500).result("Fejl ved hentning af ordrer.");
@@ -336,4 +338,12 @@ public class OrderController {
         Salesperson user = ctx.sessionAttribute("currentUser");
         return user != null && user.isAdmin();
     }
+
+    private void addAdminNameAttribute(Context ctx) {
+        Salesperson user = ctx.sessionAttribute("currentUser");
+        if (user != null && user.isAdmin()) {
+            ctx.attribute("adminName", user.getName());
+        }
+    }
+
 }
