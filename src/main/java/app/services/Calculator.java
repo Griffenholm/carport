@@ -30,7 +30,6 @@ public class Calculator
         this.materialMapper = new MaterialMapper(connectionPool);
     }
 
-
     public void calcCarport(Order order) throws DatabaseException
     {
         calcPost(order);
@@ -70,7 +69,7 @@ public class Calculator
             Orderline orderline = new Orderline(0, order, variant, quantity, "Remme til sider, sadles ned i stoper", (variant.getMaterial().getPrice() * variant.getLength() * quantity));
             orderlines.add(orderline);
         }
-        }
+    }
 
     public Map<Variant, Integer> calculateBeamVariantQuantities(int length, List<Variant> availableVariants)
     {
@@ -100,7 +99,6 @@ public class Calculator
         return variantCountMap;
     }
 
-
     //Spær
     public void calcRafters(Order order) throws DatabaseException
     {
@@ -108,8 +106,23 @@ public class Calculator
 
         availableVariants.sort(Comparator.comparingInt(Variant::getLength));
 
+        Map<Variant, Integer> variantQuantityMap = calculateRafterVariantQuantities(length, width, availableVariants);
+
+        for (Map.Entry<Variant, Integer> entry : variantQuantityMap.entrySet()) {
+            Variant variant = entry.getKey();
+            int quantity = entry.getValue();
+
+            Orderline orderline = new Orderline (0, order, variant, quantity, "Spær, montores på remme", (variant.getMaterial().getPrice() * quantity));
+            orderlines.add(orderline);
+        }
+    }
+
+    public Map<Variant, Integer> calculateRafterVariantQuantities(int length, int width, List<Variant> variants) throws DatabaseException
+    {
+        variants.sort(Comparator.comparingInt(Variant::getLength));
+
         Variant selectedVariant = null;
-        for (Variant variant : availableVariants) {
+        for (Variant variant : variants) {
             if (variant.getLength() >= width) {
                 selectedVariant = variant;
                 break;
@@ -126,10 +139,10 @@ public class Calculator
             numberOfRafters++;
         }
 
-        int quantity = numberOfRafters;
+        Map<Variant, Integer> variantCountMap = new HashMap<>();
+        variantCountMap.put(selectedVariant, numberOfRafters);
 
-        Orderline orderline = new Orderline(0, order, selectedVariant, quantity, "Spær, monteres på remme", (selectedVariant.getMaterial().getPrice() * selectedVariant.getLength() * quantity));
-        orderlines.add(orderline);
+        return variantCountMap;
     }
 
     public List<Orderline> getOrderlines()
