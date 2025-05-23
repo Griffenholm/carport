@@ -3,17 +3,15 @@ package app.entities;
 public class Material {
     int materialId;
     String name;
-    String description;
     double price;
     String unit;
     int quantity;
     int width;
     int height;
 
-    public Material(int materialId, String name, String description, double price, String unit, int quantity, int width, int height) {
+    public Material(int materialId, String name, double price, String unit, int quantity, int width, int height) {
         this.materialId = materialId;
         this.name = name;
-        this.description = description;
         this.price = price;
         this.unit = unit;
         this.quantity = quantity;
@@ -21,18 +19,17 @@ public class Material {
         this.height = height;
     }
 
-    public Material(int materialId, String name, String description, double price, String unit) {
-        this.materialId = materialId;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.unit = unit;
-    }
-
     public Material(int materialId, String name, double price, String unit) {
         this.materialId = materialId;
         this.name = name;
         this.price = price;
+        this.unit = unit;
+    }
+
+    public Material(int materialId, String name, String s, double materialPrice, String unit) {
+        this.materialId = materialId;
+        this.name = name;
+        this.price = materialPrice;
         this.unit = unit;
     }
 
@@ -50,14 +47,6 @@ public class Material {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public double getPrice() {
@@ -105,7 +94,6 @@ public class Material {
         return "Material{" +
                 "materialId=" + materialId +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", price=" + price +
                 ", unit='" + unit + '\'' +
                 ", quantity=" + quantity +

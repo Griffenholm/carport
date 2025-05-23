@@ -1,10 +1,12 @@
+<!-- se siden her: http://localhost:7070/admin/alle-ordrer -->
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Admin – Ordrer</title>
+    <title>Alle ordrer</title>
     <link rel="icon" href="/images/fogfavicon.png" type="image/png"/>
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
 </head>
@@ -17,9 +19,10 @@
                     <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
                 </a>
             </div>
-            <nav>
-                <a th:href="@{/admin/orders}">Ordrer</a>
+            <nav class="admin-nav">
+                <a th:href="@{/admin/alle-ordrer}">Alle ordrer</a>
             </nav>
+
             <div class="header-logout" style="margin-left:auto;">
                 <a th:href="@{/logout}">Log ud</a>
             </div>
@@ -29,7 +32,12 @@
 
 <main>
     <div class="container">
-        <h1>Hej <span th:text="${adminName}">Admin Name</span></h1>
+        <!--Message for seller when order has been sent -->
+        <div th:if="${message}" class="success-message">
+            <p th:text="${message}">Tilbuddet er sendt til kunden.</p>
+        </div>
+
+        <h1>Hej <span th:text="${adminName}">Sælger</span></h1>
         <section class="orders-section">
             <!-- Sub-heading + search -->
             <div class="orders-header"
@@ -41,8 +49,7 @@
                 <form th:action="@{/admin/orders}" method="get"
                       class="search-form"
                       style="display:flex; align-items:center; gap:0.5rem;">
-                    <input type="search" name="search" placeholder="Søg"/>
-                    <button type="submit">🔍</button>
+                    <input type="search" name="search" placeholder="🔍 Søg"/>
                 </form>
             </div>
 
@@ -78,25 +85,27 @@
                     <th>Status</th>
                     <th>Sælger</th>
                     <th>Dato</th>
-                    <th>Ordernr.</th>
-                    <th>Kunde</th>
+                    <th>Ordre nr.</th>
+                    <th>Kundenavn</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="order : ${orders}">
+                <tr th:each="order : ${orders}"
+                    th:href="@{/admin/ordre/{id}(id=${order.orderId})}"
+                    style="cursor: pointer;"
+                    onclick="window.location.href=this.getAttribute('href')">
+
                     <td>
-        <span class="status-indicator"
-              th:style="|color: ${order.color}|">
-          •
-        </span>
+                        <span class="status-indicator" style="color: grey;">•</span>
                     </td>
-                    <td th:text="${order.status}">Status</td>
-                    <td th:text="${order.seller}">Seller</td>
-                    <td th:text="${#dates.format(order.date, 'dd/MM/yyyy')}">01/01/2025</td>
-                    <td th:text="${order.id}">0000</td>
-                    <td th:text="${order.customerName}">Customer</td>
+                    <td th:text="${order.status}">Ingen status</td>
+                    <td th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}"></td>
+                    <td th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</td>
+                    <td th:text="${order.orderId}">0000</td>
+                    <td th:text="${order.customer.name != null ? order.customer.name : 'Ukendt kunde'}">Ukendt kunde</td>
                 </tr>
                 </tbody>
+
             </table>
         </section>
     </div>

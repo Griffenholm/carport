@@ -10,6 +10,7 @@ public class Order {
     private int shedLength;
     private int shedWidth;
     private double price;
+    private double costPrice;
     private String status;
     private LocalDate orderDate;
     private String svg;
@@ -20,23 +21,6 @@ public class Order {
 
     // Empty constructor (necessary for Javalin form-binding)
     public Order() {}
-
-    public Order(int orderId, int carportHeight, int carportLength, int carportWidth, int shedLength, int shedWidth, int price, String status, LocalDate orderDate, String svg, LocalDate deliveryDate, Carport carport, Customer customer, Salesperson salesperson) {
-        this.orderId = orderId;
-        this.carportHeight = carportHeight;
-        this.carportLength = carportLength;
-        this.carportWidth = carportWidth;
-        this.shedLength = shedLength;
-        this.shedWidth = shedWidth;
-        this.price = price;
-        this.status = status;
-        this.orderDate = orderDate;
-        this.svg = svg;
-        this.deliveryDate = deliveryDate;
-        this.carport = carport;
-        this.customer = customer;
-        this.salesperson = salesperson;
-    }
 
     public Order(int orderId, int carportHeight, int carportLength, int carportWidth, double price, String status, LocalDate deliveryDate, Customer customer) {
         this.orderId = orderId;
@@ -56,6 +40,18 @@ public class Order {
         this.price = price;
         this.status = status;
         this.deliveryDate = orderDate;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getCostPrice() {
+        return costPrice;
+    }
+
+    public void setCostPrice(double costPrice) {
+        this.costPrice = costPrice;
     }
 
     public int getOrderId() {
@@ -180,8 +176,9 @@ public class Order {
                 ", shedLength=" + shedLength +
                 ", shedWidth=" + shedWidth +
                 ", price=" + price +
+                ", costPrice=" + costPrice +
                 ", status='" + status + '\'' +
-                ", order_date=" + orderDate +
+                ", orderDate=" + orderDate +
                 ", svg='" + svg + '\'' +
                 ", deliveryDate=" + deliveryDate +
                 ", carport=" + carport +

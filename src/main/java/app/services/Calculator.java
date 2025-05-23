@@ -12,6 +12,8 @@ public class Calculator
     private static final int POSTS = 6;
     private static final int RAFTERS = 5;
     private static final int BEAMS = 5;
+    private static final double MULTIPLIER = 5;
+
 
     private List<Orderline> orderlines = new ArrayList<>();
     private int width;
@@ -25,6 +27,7 @@ public class Calculator
         this.width = width;
         this.length = length;
         this.connectionPool = connectionPool;
+        this.materialMapper = new MaterialMapper(connectionPool);
     }
 
     public void calcCarport(Order order) throws DatabaseException
@@ -41,7 +44,7 @@ public class Calculator
 
         List<Variant> variants = materialMapper.getMaterialVariantsByMaterialIdAndMinLength(1, POSTS, connectionPool);
         Variant variant = variants.get(0);
-        Orderline orderline = new Orderline(0, order, variant, quantity, "Stolper nedgraves 90 cm. i jord", (variant.getMaterial().getPrice() * quantity));
+        Orderline orderline = new Orderline(0, order, variant, quantity, "Stolper nedgraves 90 cm. i jord", (variant.getMaterial().getPrice() * variant.getLength() * quantity));
         orderlines.add(orderline);
     }
 
@@ -63,7 +66,7 @@ public class Calculator
         {
             Variant variant = entry.getKey();
             int quantity = entry.getValue();
-            Orderline orderline = new Orderline(0, order, variant, quantity, "Remme til sider, sadles ned i stoper", (variant.getMaterial().getPrice() * quantity));
+            Orderline orderline = new Orderline(0, order, variant, quantity, "Remme til sider, sadles ned i stoper", (variant.getMaterial().getPrice() * variant.getLength() * quantity));
             orderlines.add(orderline);
         }
     }
@@ -146,4 +149,15 @@ public class Calculator
     {
         return orderlines;
     }
+
+    public void calculateAndSetPrices(Order order) throws DatabaseException {
+        this.calcCarport(order);
+        double costPrice = this.getOrderlines().stream()
+                .mapToDouble(Orderline::getOrderlinePrice)
+                .sum();
+        double price = costPrice * MULTIPLIER;
+        order.setCostPrice(costPrice);
+        order.setPrice(price);
+    }
+    
 }
