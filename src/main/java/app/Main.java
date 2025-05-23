@@ -2,6 +2,7 @@ package app;
 
 import app.config.SessionConfig;
 import app.config.ThymeleafConfig;
+import app.controllers.MaterialController;
 import app.controllers.OrderController;
 import app.persistence.ConnectionPool;
 import io.javalin.Javalin;
@@ -28,5 +29,7 @@ public class Main {
         // Add OrderController routes
         OrderController orderController = new OrderController(connectionPool);
         orderController.addRoutes(app);
+        MaterialController.addRoutes(app, connectionPool);
+
     }
 }

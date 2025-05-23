@@ -51,35 +51,36 @@
                 .catch(error => console.error("Error:", error));
         }
 
-            function calculateProfitAndMargin() {
+        function calculateProfitAndMargin() {
             const price = parseFloat(document.getElementById("orderPrice").value.replace(",", "."));
-            const costPrice = parseFloat(document.getElementById("costPriceDisplay").innerText.replace(" kr", "").replace(",", "."));
+            const costPrice = parseFloat(document.getElementById("costPriceDisplay").value.replace(" kr", "").replace(",", "."));
 
             if (!isNaN(price) && !isNaN(costPrice) && costPrice > 0) {
-            const profit = price - costPrice;
-            const margin = (profit / price) * 100;
+                const profit = price - costPrice;
+                const margin = (profit / price) * 100;
 
-            document.getElementById("profitDisplay").innerText = profit.toFixed(2) + " kr";
-            document.getElementById("marginDisplay").innerText = margin.toFixed(1) + " %";
-        } else {
-            document.getElementById("profitDisplay").innerText = "0 kr";
-            document.getElementById("marginDisplay").innerText = "0%";
-        }
+                document.getElementById("profitDisplay").innerText = profit.toFixed(2).replace(".", ",") + " kr";
+                document.getElementById("marginDisplay").innerText = margin.toFixed(1).replace(".", ",") + " %";
+
+            } else {
+                document.getElementById("profitDisplay").innerText = "0 kr";
+                document.getElementById("marginDisplay").innerText = "0%";
+            }
         }
 
-            document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => {
             // initial calculation
             calculateProfitAndMargin();
 
             // calculate again when price is changed
             document.getElementById("orderPrice").addEventListener("input", calculateProfitAndMargin);
+            document.getElementById("costPriceDisplay").addEventListener("input", calculateProfitAndMargin);
         });
 
-
-    window.addEventListener("DOMContentLoaded", function () {
-    toggleShedFields(); // hvis du allerede bruger denne
-    updateProfitAndMargin(); // start beregning
-    });
+        window.addEventListener("DOMContentLoaded", function () {
+            toggleShedFields();
+            calculateProfitAndMargin();
+        });
 
     </script>
 
@@ -94,7 +95,7 @@
                 </a>
             </div>
             <nav class="admin-nav">
-                <a th:href="@{/admin/alle-ordrer}">Alle ordrer</a>
+                <a th:href="@{/admin/alle-ordrer}">← Alle ordrer</a>
             </nav>
             <div class="header-logout" style="margin-left:auto;">
                 <a th:href="@{/logout}">Log ud</a>
@@ -135,7 +136,7 @@
                     <label>Carport længde
                         <input type="number" name="carportLength" th:value="${order.carportLength}" required/>
                     </label>
-                    <label>Carport bredde
+                    <label>Carport højde
                         <input type="number" name="carportHeight" th:value="${order.carportHeight}" required/>
                     </label>
 
@@ -144,16 +145,22 @@
                         <h2>Skur</h2>
                         <label>Redskabsrum
                             <select id="shedToggle" name="shedToggle" onchange="toggleShedFields()">
-                                <option value="none" selected>Uden redskabsrum</option>
-                                <option value="with">Med redskabsrum</option>
+                                <option value="none" th:selected="${order.shedLength == 0 or order.shedWidth == 0}">Uden
+                                    redskabsrum
+                                </option>
+                                <option value="with" th:selected="${order.shedLength > 0 and order.shedWidth > 0}">Med
+                                    redskabsrum
+                                </option>
                             </select>
                         </label>
                         <div id="shedFields" class="form-subsection" style="display: none;">
                             <label>Redskabsrum bredde
-                                <input type="number" name="shedWidth" th:value="${order.shedWidth}" placeholder="Angiv bredde i cm"/>
+                                <input type="number" name="shedWidth" th:value="${order.shedWidth}"
+                                       placeholder="Angiv bredde i cm"/>
                             </label>
                             <label>Redskabsrum længde
-                                <input type="number" name="shedLength" th:value="${order.shedLength}" placeholder="Angiv længde i cm"/>
+                                <input type="number" name="shedLength" th:value="${order.shedLength}"
+                                       placeholder="Angiv længde i cm"/>
                             </label>
                         </div>
                     </div>
@@ -172,16 +179,56 @@
                         </div>
                     </div>
 
+                    <!-- Material list -->
+                    <div class="material-list-section">
+                        <h2>Materialeliste</h2>
+                        <table class="material-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Navn</th>
+                                <th>Længde</th>
+                                <th>Bredde</th>
+                                <th>Højde</th>
+                                <th>Enhed</th>
+                                <th>Antal</th>
+                                <th>Pris</th>
+                                <th>Beskrivelse</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="orderline : ${orderlines}">
+                                <td th:text="${orderline.variant.material.materialId}"></td>
+                                <td th:text="${orderline.variant.material.name}"></td>
+                                <td th:text="${orderline.variant.length} + ' cm'"></td>
+                                <td th:text="${orderline.variant.material.width} + ' mm'"></td>
+                                <td th:text="${orderline.variant.material.height} + ' mm'"></td>
+                                <td th:text="${orderline.variant.material.unit}"></td>
+                                <td th:text="${orderline.quantity}"></td>
+                                <td th:text="${#numbers.formatDecimal(orderline.orderlinePrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"></td>
+                                <td th:text="${orderline.buildDescription}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!--Price section -->
                     <div class="price-section">
-                    <p>Vejledende pris: <span th:text="${order.price} + ' kr.'">0000 kr</span></p>
+                        <p>Vejledende pris: <span
+                                th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 2, 'POINT')} + ' kr'">0000 kr</span>
+                        </p>
                         <input type="hidden" name="orderId" th:value="${order.orderId}"/>
 
                         <label for="orderPrice">Endelig pris:</label>
                         <input type="number" id="orderPrice" name="orderPrice" th:value="${order.price}" required/>
 
                         <!-- Material cost -->
-                        <p>Pris på materialer: <span id="costPriceDisplay" th:text="${order.costPrice} + ' kr'">0 kr</span></p>
-                        <input type="hidden" name="costPrice" th:value="${order.costPrice}" />
+                        <label>Pris på materialer:
+                            <input type="text" id="costPriceDisplay"
+                                   th:value="${#numbers.formatDecimal(order.costPrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"
+                                   readonly/>
+                        </label>
+                        <input type="hidden" name="costPrice" th:value="${order.costPrice}"/>
 
                         <!-- Calculator -->
                         <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
@@ -189,13 +236,14 @@
 
                         <!-- Save button -->
                         <button type="submit">Gem ændringerne
-                        <img src="../public/images/save_icon.png" th:src="@{/images/save_icon.png}" alt="Ikon"
-                             style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
-                    </button>
+                            <img src="../public/images/save_icon.png" th:src="@{/images/save_icon.png}" alt="Ikon"
+                                 style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                        </button>
 
                         <a th:href="@{/admin/ordre/preview/{id}(id=${order.orderId})}" class="button">
                             Vis endelig ordre og send til kunden →
                         </a>
+                    </div>
                 </div>
             </form>
         </section>

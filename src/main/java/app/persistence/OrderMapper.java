@@ -42,7 +42,7 @@ public class OrderMapper {
             stmt.setObject(6, order.getShedLength() != 0 ? order.getShedLength() : null, java.sql.Types.INTEGER);
             stmt.setString(7, order.getStatus());
             stmt.setDouble(8, order.getPrice());
-            stmt.setDouble(9, order.getPrice()); // Assuming cost price is the same as order price for now
+            stmt.setDouble(9, order.getCostPrice());
             // Set salesperson ID directly from the order
             stmt.setInt(10, order.getSalesperson().getSalespersonId());
             // Set SVG if it exists, otherwise set it to null
@@ -357,4 +357,72 @@ public class OrderMapper {
     }
 
 
+    public List<Orderline> getOrderlinesForOrder(int orderId) throws SQLException {
+        List<Orderline> orderlines = new ArrayList<>();
+        String sql = """
+                SELECT o.orderline_id, o.quantity, o.build_description, o.orderline_price,
+                       v.variant_id, v.length,
+                       m.material_id, m.name, m.price, m.unit, m.width, m.height
+                FROM orderline o
+                JOIN variant v ON o.variant_id = v.variant_id
+                JOIN material m ON v.material_id = m.material_id
+                WHERE o.order_id = ?
+                """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Material material = new Material(
+                        rs.getInt("material_id"),
+                        rs.getString("name"),
+                        rs.getDouble("price"),
+                        rs.getString("unit"),
+                        rs.getInt("quantity"),
+                        rs.getInt("width"),
+                        rs.getInt("height")
+                );
+
+                Variant variant = new Variant(
+                        rs.getInt("variant_id"),
+                        rs.getInt("length"),
+                        material
+                );
+
+                Orderline orderline = new Orderline(
+                        rs.getInt("orderline_id"),
+                        null, // Order will be set later
+                        variant,
+                        rs.getInt("quantity"),
+                        rs.getString("build_description"),
+                        rs.getDouble("orderline_price")
+                );
+                orderlines.add(orderline);
+            }
+        }
+
+        return orderlines;
+    }
+    public void saveOrderlines(List<Orderline> orderlines, int orderId) throws SQLException {
+        String sql = """
+        INSERT INTO orderline (order_id, variant_id, quantity, build_description, orderline_price)
+        VALUES (?, ?, ?, ?, ?)
+    """;
+
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            for (Orderline orderline : orderlines) {
+                ps.setInt(1, orderId);
+                ps.setInt(2, orderline.getVariant().getVariantId());
+                ps.setInt(3, orderline.getQuantity());
+                ps.setString(4, orderline.getBuildDescription());
+                ps.setDouble(5, orderline.getOrderlinePrice());
+                ps.addBatch();  // Optimized batch insert
+            }
+
+            ps.executeBatch(); // Execute all at once
+        }
+    }
 }

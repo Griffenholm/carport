@@ -6,6 +6,7 @@ import app.persistence.OrderMapper;
 import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
 import app.services.CarportSvg;
+import app.services.Calculator;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -19,8 +20,10 @@ public class OrderController {
     private final OrderMapper orderMapper;
     private final UserMapper userMapper;
     private final CarportMapper carportMapper;
+    private final ConnectionPool connectionPool;
 
     public OrderController(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
         this.orderMapper = new OrderMapper(connectionPool);
         this.userMapper = new UserMapper(connectionPool);
         this.carportMapper = new CarportMapper(connectionPool);
@@ -55,6 +58,33 @@ public class OrderController {
             orderMapper.updateOrderStatus(orderId, "Sendt til kunde");
             ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
             ctx.redirect("/admin/alle-ordrer");
+        });
+
+        // Admin login
+        app.get("/login", ctx -> ctx.render("login.html"));
+
+        app.post("/login", ctx -> {
+            String email = ctx.formParam("email");
+            String password = ctx.formParam("password");
+
+            try {
+                Salesperson salesperson = userMapper.getSalespersonByEmailAndPassword(email, password);
+                if (salesperson != null && salesperson.isAdmin()) {
+                    ctx.sessionAttribute("currentUser", salesperson);
+                    ctx.redirect("/admin/alle-ordrer");
+                } else {
+                    ctx.attribute("error", "Ugyldige loginoplysninger eller manglende adgang.");
+                    ctx.render("login.html");
+                }
+            } catch (Exception e) {
+                ctx.attribute("error", "Login mislykkedes.");
+                ctx.render("login.html");
+            }
+        });
+        // Admin logout
+        app.get("/logout", ctx -> {
+            ctx.req().getSession().invalidate();
+            ctx.redirect("/login");
         });
     }
 
@@ -104,7 +134,6 @@ public class OrderController {
                     carport.setShedLength(shedLength);
                 }
             }
-
             // Save carport to database
             carportMapper.saveCarport(carport);
 
@@ -112,7 +141,8 @@ public class OrderController {
             Order order = new Order();
             order.setCustomer(customer);
             order.setCarport(carport);
-            order.setPrice(25000);  // Hardcoded price. TODO: add dynamic price calculation
+            Calculator calculator = new Calculator(carportWidth, carportLength, connectionPool);
+            calculator.calculateAndSetPrices(order);
             order.setStatus("Ny ordre");
             order.setDeliveryDate(null);
             order.setSalesperson(salesperson);
@@ -128,6 +158,10 @@ public class OrderController {
             order.setOrderDate(LocalDate.now());
 
             orderMapper.saveOrder(order);
+
+            // Save orderlines to database
+            List<Orderline> orderlines = calculator.getOrderlines();
+            orderMapper.saveOrderlines(orderlines, order.getOrderId());
 
             // Save order in session
             ctx.sessionAttribute("order", order);
@@ -205,6 +239,10 @@ public class OrderController {
     }
 
     public void showOrdersPage(Context ctx) {
+        if (!isAdmin(ctx)) {
+            ctx.redirect("/login");
+            return;
+        }
         try {
             List<Order> orders = orderMapper.getAllOrdersForSalesPerson();
             if (orders == null) {
@@ -216,23 +254,30 @@ public class OrderController {
                 ctx.attribute("message", message);
                 ctx.sessionAttribute("message", null); // remove after viewing
             }
-
             ctx.attribute("orders", orders);
+            addAdminNameAttribute(ctx); // Admin name
             ctx.render("alle-ordrer.html");
+
         } catch (SQLException e) {
             e.printStackTrace();
             ctx.status(500).result("Fejl ved hentning af ordrer.");
         }
     }
 
-
     private void showOrderDetails(Context ctx) {
+        if (!isAdmin(ctx)) {
+            ctx.redirect("/login");
+            return;
+        }
         try {
             int orderId = Integer.parseInt(ctx.pathParam("id"));
             Order order = orderMapper.getOrderById(orderId);
             if (order != null) {
+                List<Orderline> orderlines = orderMapper.getOrderlinesForOrder(orderId);
                 ctx.attribute("order", order);
+                ctx.attribute("orderlines", orderlines);
                 ctx.attribute("svg", order.getSvg());
+
                 ctx.render("ordre-detaljer.html");
             } else {
                 ctx.status(404).result("Ordre ikke fundet");
@@ -244,6 +289,10 @@ public class OrderController {
     }
 
     private void updateFullOrder(Context ctx) {
+        if (!isAdmin(ctx)) {
+            ctx.redirect("/login");
+            return;
+        }
         try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
             int carportWidth = Integer.parseInt(ctx.formParam("carportWidth"));
@@ -252,7 +301,7 @@ public class OrderController {
             double newPrice = Double.parseDouble(ctx.formParam("orderPrice"));
             double costPrice = Double.parseDouble(ctx.formParam("costPrice"));
 
-            // Skur
+            // Shed
             int shedWidth = 0;
             int shedLength = 0;
             String shedToggle = ctx.formParam("shedToggle");
@@ -261,11 +310,11 @@ public class OrderController {
                 shedLength = Integer.parseInt(ctx.formParam("shedLength"));
             }
 
-            // Generer ny SVG
+            // Generate new SVG based on updated dimensions
             CarportSvg carportSvg = new CarportSvg(carportWidth, carportLength);
             String newSvg = carportSvg.toString();
 
-            // Hent eksisterende ordre og overskriv felter
+            // Get existing order and overwrite fields
             Order order = orderMapper.getOrderById(orderId);
             order.setCarportWidth(carportWidth);
             order.setCarportLength(carportLength);
@@ -285,5 +334,16 @@ public class OrderController {
         }
     }
 
+    private boolean isAdmin(Context ctx) {
+        Salesperson user = ctx.sessionAttribute("currentUser");
+        return user != null && user.isAdmin();
+    }
+
+    private void addAdminNameAttribute(Context ctx) {
+        Salesperson user = ctx.sessionAttribute("currentUser");
+        if (user != null && user.isAdmin()) {
+            ctx.attribute("adminName", user.getName());
+        }
+    }
 
 }
