@@ -6,6 +6,7 @@ public class Salesperson {
     String email;
     String password;
     boolean isAdmin;
+    int phoneNumber;
 
     public Salesperson(int salespersonId, String name, String email, String password, boolean isAdmin) {
         this.salespersonId = salespersonId;
@@ -16,6 +17,15 @@ public class Salesperson {
     }
 
     public Salesperson() {
+    }
+
+    public Salesperson(int salespersonId, String name, String email, String password, boolean isAdmin, int phoneNumber) {
+        this.salespersonId = salespersonId;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.isAdmin = isAdmin;
+        this.phoneNumber = phoneNumber;
     }
 
     public int getSalespersonId() {

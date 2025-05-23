@@ -118,4 +118,25 @@ public class UserMapper {
         }
         return null;
     }
+
+    public Salesperson getSalespersonByEmailAndPassword(String email, String password) throws SQLException {
+        String sql = "SELECT * FROM salesperson WHERE email = ? AND password = ?";
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Salesperson(
+                        rs.getInt("salesperson_id"),
+                        rs.getString("name"),
+                        email,
+                        password,
+                        rs.getBoolean("is_admin"),
+                        rs.getInt("phone_number")
+                );
+            }
+        }
+        return null;
+    }
 }

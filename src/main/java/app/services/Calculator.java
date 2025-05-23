@@ -143,9 +143,6 @@ public class Calculator
                 .mapToDouble(Orderline::getOrderlinePrice)
                 .sum();
         double price = costPrice * MULTIPLIER;
-        System.out.println("BRUGT MULTIPLIER: " + MULTIPLIER);
-        System.out.println("CostPrice: " + costPrice);
-        System.out.println("Price: " + price);
         order.setCostPrice(costPrice);
         order.setPrice(price);
     }

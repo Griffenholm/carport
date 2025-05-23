@@ -22,24 +22,6 @@ public class Order {
     // Empty constructor (necessary for Javalin form-binding)
     public Order() {}
 
-    public Order(int orderId, int carportHeight, int carportLength, int carportWidth, int shedLength, int shedWidth, double price, double costPrice, String status, LocalDate orderDate, String svg, LocalDate deliveryDate, Carport carport, Customer customer, Salesperson salesperson) {
-        this.orderId = orderId;
-        this.carportHeight = carportHeight;
-        this.carportLength = carportLength;
-        this.carportWidth = carportWidth;
-        this.shedLength = shedLength;
-        this.shedWidth = shedWidth;
-        this.price = price;
-        this.costPrice = costPrice;
-        this.status = status;
-        this.orderDate = orderDate;
-        this.svg = svg;
-        this.deliveryDate = deliveryDate;
-        this.carport = carport;
-        this.customer = customer;
-        this.salesperson = salesperson;
-    }
-
     public Order(int orderId, int carportHeight, int carportLength, int carportWidth, double price, String status, LocalDate deliveryDate, Customer customer) {
         this.orderId = orderId;
         this.carportHeight = carportHeight;

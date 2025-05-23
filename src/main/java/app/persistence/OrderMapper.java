@@ -404,5 +404,25 @@ public class OrderMapper {
 
         return orderlines;
     }
+    public void saveOrderlines(List<Orderline> orderlines, int orderId) throws SQLException {
+        String sql = """
+        INSERT INTO orderline (order_id, variant_id, quantity, build_description, orderline_price)
+        VALUES (?, ?, ?, ?, ?)
+    """;
 
+        try (Connection conn = connectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            for (Orderline orderline : orderlines) {
+                ps.setInt(1, orderId);
+                ps.setInt(2, orderline.getVariant().getVariantId());
+                ps.setInt(3, orderline.getQuantity());
+                ps.setString(4, orderline.getBuildDescription());
+                ps.setDouble(5, orderline.getOrderlinePrice());
+                ps.addBatch();  // Optimized batch insert
+            }
+
+            ps.executeBatch(); // Execute all at once
+        }
+    }
 }
