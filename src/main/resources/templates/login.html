@@ -26,10 +26,20 @@
 <main>
     <h1>FOG admin portal</h1>
     <h2>Log ind</h2>
-    <form th:action="@{/login}" method="post">
-        <label>Email: <input type="email" name="email" required></label><br>
-        <label>Password: <input type="password" name="password" required></label><br>
-        <button type="submit">Log ind</button>
+    <form th:action="@{/login}" method="post" class="login-form">
+        <div class="form-group">
+            <label>Email:</label>
+            <input type="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label>Adgangskode:</label>
+            <input type="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Log ind</button>
+        </div>
     </form>
     <p th:if="${error}" th:text="${error}" style="color: red;"></p>
 </main>
