@@ -20,7 +20,7 @@ class CalculatorTest
 
     private static final String USER = "postgres";
     private static final String PASSWORD = System.getenv("password"); // We have used environment variables for security. Click main -> Edit Configurations -> Environment Variables -> Add password and ip
-    private static final String URL = = "jdbc:postgresql://" + System.getenv("ip") + ":5432/%s?currentSchema=public";
+    private static final String URL = "jdbc:postgresql://" + System.getenv("ip") + ":5432/%s?currentSchema=public";
     private static final String DB = "fog";
     private static final int BEAMS = 5;
 

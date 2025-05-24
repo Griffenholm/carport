@@ -142,7 +142,9 @@ public class OrderMapper {
                            c.phone_number AS customer_phone,
                            ci.city_name AS customer_city,
                            s.salesperson_id,
-                           s.name AS salesperson_name
+                           s.name AS salesperson_name,
+                           s.email AS salesperson_email,
+                           s.phone_number AS salesperson_phone
                        FROM orders o
                        LEFT JOIN customer c ON o.customer_number = c.phone_number
                        LEFT JOIN city ci ON c.zip = ci.zip
@@ -167,8 +169,6 @@ public class OrderMapper {
                     order.setSvg(rs.getString("svg"));
                     order.setPrice(rs.getInt("order_price"));
                     order.setCostPrice(rs.getInt("cost_price"));
-                    order.setCarportWidth(rs.getInt("carport_width"));
-                    order.setCarportLength(rs.getInt("carport_length"));
 
                     // Shed - only if it is not null
                     int shedWidth = rs.getInt("shed_width");
@@ -196,6 +196,8 @@ public class OrderMapper {
                         Salesperson salesperson = new Salesperson();
                         salesperson.setSalespersonId(salespersonId);
                         salesperson.setName(rs.getString("salesperson_name"));
+                        salesperson.setEmail(rs.getString("salesperson_email"));
+                        salesperson.setPhoneNumber(rs.getInt("salesperson_phone"));
                         order.setSalesperson(salesperson);
                     }
 

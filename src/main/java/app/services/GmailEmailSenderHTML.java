@@ -55,7 +55,6 @@ public class GmailEmailSenderHTML {
         message.setContent(htmlBody, "text/html; charset=UTF-8");
 
         Transport.send(message);
-        System.out.println("HTML-mail sendt til " + to);
     }
 
     // 🧪 Main-metode til test

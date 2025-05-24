@@ -7,6 +7,7 @@ import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
 import app.services.CarportSvg;
 import app.services.Calculator;
+import app.services.EmailSender;
 import app.services.GmailEmailSenderHTML;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -56,9 +57,19 @@ public class OrderController {
             ctx.attribute("order", order);
             ctx.render("ordre-oversigt.html");
         });
+
         app.post("/admin/ordre/send", ctx -> {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
             orderMapper.updateOrderStatus(orderId, "Sendt til kunde");
+            // Send email to customer
+            try {
+                Order order = orderMapper.getOrderById(orderId);
+                EmailSender emailSender = new EmailSender();
+                emailSender.sendFinalOfferEmail(order);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            // Show the seller a succes message
             ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
             ctx.redirect("/admin/alle-ordrer");
         });
@@ -163,25 +174,8 @@ public class OrderController {
             orderMapper.saveOrder(order);
 
             // Send email to customer
-            try {
-                GmailEmailSenderHTML emailSender = new GmailEmailSenderHTML();
-
-                // Write variables to from the order
-                Map<String, Object> variables = Map.of(
-                        "title", "Tak for din bestilling!",
-                        "name", customer.getName(),
-                        "orderId", order.getOrderId(),
-                        "salesperson", salesperson.getName(),
-                        "salespersonNumber", salesperson.getPhoneNumber()
-                );
-
-                String html = emailSender.renderTemplate("ordre-email.html", variables);
-                emailSender.sendHtmlEmail("Enilocin99@gmail.com", "Tak for din bestilling hos Fog Carporte", html);
-
-            } catch (MessagingException e) {
-                System.err.println("Fejl ved afsendelse af e-mail: " + e.getMessage());
-                e.printStackTrace();
-            }
+            EmailSender emailSender = new EmailSender();
+            emailSender.sendOrderConfirmationEmail(order);
 
             // Save orderlines to database
             List<Orderline> orderlines = calculator.getOrderlines();
