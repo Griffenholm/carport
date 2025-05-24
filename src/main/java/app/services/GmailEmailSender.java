@@ -20,7 +20,7 @@ public class GmailEmailSender {
         }
     }
 
-    public void sendPlainTextEmail(String to, String subject, String body) throws MessagingException {
+    public void sendPlainTextEmail(String receiver, String subject, String body) throws MessagingException {
         Properties props = new Properties();
 
         props.put("mail.smtp.auth", "true");
@@ -37,15 +37,15 @@ public class GmailEmailSender {
 
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(username));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
         message.setSubject(subject);
         message.setText(body); // Plain text only
 
         Transport.send(message);
-        System.out.println("Email sent successfully to " + to);
+        System.out.println("Email sent successfully to " + receiver);
     }
 
-    // 🧪 Main-metode til test
+    // 🧪 Main-method for testing
     public static void main(String[] args) {
         GmailEmailSender sender = new GmailEmailSender();
 

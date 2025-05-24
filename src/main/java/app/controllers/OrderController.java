@@ -7,6 +7,7 @@ import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
 import app.services.CarportSvg;
 import app.services.Calculator;
+import app.services.EmailSender;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OrderController {
 
@@ -34,58 +36,54 @@ public class OrderController {
         app.get("/summary", this::showSummary);
         app.get("/", this::showOrder);
         app.post("/update-sketch", this::updateSketch);
-        app.get("/admin/alle-ordrer", ctx -> showOrdersPage(ctx));
-        app.get("/admin/ordre/{id}", this::showOrderDetails);
         app.get("/city/{zip}", this::getCityByZip);
-        app.get("/tak-for-din-ordre", ctx -> {
-            Order order = ctx.sessionAttribute("order");
-            if (order != null) {
-                ctx.render("tak-for-din-ordre.html");
-            } else {
-                ctx.redirect("/");
-            }
-        });
-        app.post("/admin/update-order", this::updateFullOrder);
 
-        app.get("/admin/ordre/preview/{id}", ctx -> {
-            int orderId = Integer.parseInt(ctx.pathParam("id"));
+        app.get("/tak-for-din-ordre", this::showThankYouPage);
+
+        // Admin routes
+        app.get("/admin/alle-ordrer", this::showOrdersPage);
+        app.get("/admin/ordre/{id}", this::showOrderDetails);
+        app.get("/admin/ordre/preview/{id}", this::previewOrder);
+        app.post("/admin/ordre/send", this::sendOrderToCustomer);
+        app.post("/admin/update-order", this::updateFullOrder);
+    }
+
+    private void showThankYouPage(Context ctx) {
+        Order order = ctx.sessionAttribute("order");
+        if (order != null) {
+            ctx.render("tak-for-din-ordre.html");
+        } else {
+            ctx.redirect("/");
+        }
+    }
+
+    private void previewOrder(Context ctx) {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+        try {
             Order order = orderMapper.getOrderById(orderId);
             ctx.attribute("order", order);
             ctx.render("ordre-oversigt.html");
-        });
-        app.post("/admin/ordre/send", ctx -> {
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af ordre.");
+        }
+    }
+
+    private void sendOrderToCustomer(Context ctx) {
+        try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
             orderMapper.updateOrderStatus(orderId, "Sendt til kunde");
+
+            Order order = orderMapper.getOrderById(orderId);
+            EmailSender emailSender = new EmailSender();
+            emailSender.sendFinalOfferEmail(order);
+
             ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
             ctx.redirect("/admin/alle-ordrer");
-        });
-
-        // Admin login
-        app.get("/login", ctx -> ctx.render("login.html"));
-
-        app.post("/login", ctx -> {
-            String email = ctx.formParam("email");
-            String password = ctx.formParam("password");
-
-            try {
-                Salesperson salesperson = userMapper.getSalespersonByEmailAndPassword(email, password);
-                if (salesperson != null && salesperson.isAdmin()) {
-                    ctx.sessionAttribute("currentUser", salesperson);
-                    ctx.redirect("/admin/alle-ordrer");
-                } else {
-                    ctx.attribute("error", "Ugyldige loginoplysninger eller manglende adgang.");
-                    ctx.render("login.html");
-                }
-            } catch (Exception e) {
-                ctx.attribute("error", "Login mislykkedes.");
-                ctx.render("login.html");
-            }
-        });
-        // Admin logout
-        app.get("/logout", ctx -> {
-            ctx.req().getSession().invalidate();
-            ctx.redirect("/login");
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved afsendelse af e-mail.");
+        }
     }
 
     private void handleOrder(Context ctx) {
@@ -154,10 +152,14 @@ public class OrderController {
             order.setShedLength(shedLength != null ? shedLength : 0);
             // Add the generated SVG to the order
             order.setSvg(svgString);
-            // Sæt ordredatoen automatisk til dags dato
+            // Set order date automatically to today's date
             order.setOrderDate(LocalDate.now());
 
             orderMapper.saveOrder(order);
+
+            // Send email to customer
+            EmailSender emailSender = new EmailSender();
+            emailSender.sendOrderConfirmationEmail(order);
 
             // Save orderlines to database
             List<Orderline> orderlines = calculator.getOrderlines();
@@ -239,23 +241,58 @@ public class OrderController {
     }
 
     public void showOrdersPage(Context ctx) {
-        if (!isAdmin(ctx)) {
+        if (!UserController.isAdmin(ctx)) {
             ctx.redirect("/login");
             return;
         }
+
         try {
+            String statusFilter = ctx.queryParam("status");
+            String sellerFilter = ctx.queryParam("salesperson");
+
             List<Order> orders = orderMapper.getAllOrdersForSalesPerson();
             if (orders == null) {
                 orders = new ArrayList<>();
             }
-            // Get message from session and send to Thymeleaf
+
+            // Filter after status
+            if (statusFilter != null && !statusFilter.isBlank()) {
+                orders.removeIf(order -> !statusFilter.equals(order.getStatus()));
+            }
+
+            // Filter after seller
+            if (sellerFilter != null && !sellerFilter.isBlank()) {
+                orders.removeIf(order -> order.getSalesperson() == null || !sellerFilter.equals(order.getSalesperson().getName()));
+            }
+
+            // Unique status and seller names for dropdowns
+            List<String> statusOptions = orders.stream()
+                    .map(Order::getStatus)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .sorted()
+                    .toList();
+
+            List<String> sellerOptions = orders.stream()
+                    .map(Order::getSalesperson)
+                    .filter(Objects::nonNull)
+                    .map(Salesperson::getName)
+                    .distinct()
+                    .sorted()
+                    .toList();
+
+            // Success message from session
             String message = ctx.sessionAttribute("message");
             if (message != null) {
                 ctx.attribute("message", message);
-                ctx.sessionAttribute("message", null); // remove after viewing
+                ctx.sessionAttribute("message", null);
             }
+
+            // Send to Thymeleaf
             ctx.attribute("orders", orders);
-            addAdminNameAttribute(ctx); // Admin name
+            ctx.attribute("statusOptions", statusOptions);
+            ctx.attribute("sellerOptions", sellerOptions);
+            UserController.addAdminNameAttribute(ctx);
             ctx.render("alle-ordrer.html");
 
         } catch (SQLException e) {
@@ -265,7 +302,7 @@ public class OrderController {
     }
 
     private void showOrderDetails(Context ctx) {
-        if (!isAdmin(ctx)) {
+        if (!UserController.isAdmin(ctx)) {
             ctx.redirect("/login");
             return;
         }
@@ -289,7 +326,7 @@ public class OrderController {
     }
 
     private void updateFullOrder(Context ctx) {
-        if (!isAdmin(ctx)) {
+        if (!UserController.isAdmin(ctx)) {
             ctx.redirect("/login");
             return;
         }
@@ -333,17 +370,4 @@ public class OrderController {
             ctx.status(400).result("Kunne ikke opdatere ordren.");
         }
     }
-
-    private boolean isAdmin(Context ctx) {
-        Salesperson user = ctx.sessionAttribute("currentUser");
-        return user != null && user.isAdmin();
-    }
-
-    private void addAdminNameAttribute(Context ctx) {
-        Salesperson user = ctx.sessionAttribute("currentUser");
-        if (user != null && user.isAdmin()) {
-            ctx.attribute("adminName", user.getName());
-        }
-    }
-
 }

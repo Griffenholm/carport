@@ -1,4 +1,4 @@
-<!-- se siden her: http://localhost:7070/login -->
+<!-- see page here: http://localhost:7070/login -->
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -27,16 +27,16 @@
     <h1>FOG admin portal</h1>
     <h2>Log ind</h2>
     <form th:action="@{/login}" method="post" class="login-form">
-        <div class="form-group">
-            <label>Email:</label>
-            <input type="email" name="email" required>
+        <div class="login-fields">
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Adgangskode:</label>
+                <input type="password" name="password" required>
+            </div>
         </div>
-
-        <div class="form-group">
-            <label>Adgangskode:</label>
-            <input type="password" name="password" required>
-        </div>
-
         <div class="form-group">
             <button type="submit">Log ind</button>
         </div>

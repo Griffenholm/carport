@@ -102,10 +102,8 @@ tbody tr:hover {
     background-color: #f2f2f2;
 }
 
-
 /* Header */
 header {
-    background-color: white;
     padding: 20px 0;
 }
 .header-logo img {
@@ -122,6 +120,17 @@ nav a {
     color: #000;
     font-weight: bold;
 }
+.header-logout {
+    margin-left:auto
+}
+.header-logout a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+.header-logout a:hover {
+    color: #003f7d;
+}
 
 /* Customer Frontpage */
 .intro-with-image {
@@ -133,6 +142,7 @@ nav a {
 }
 .intro-text {
     flex: 1;
+    line-height: 1.4;
 }
 .intro-text h1 {
     font-size: 24px;
@@ -189,12 +199,10 @@ nav a {
 }
 
 /* Admin Orders Table */
-
 .orders-table {
     width: 100%;
     border-collapse: collapse;
 }
-
 .orders-table th,
 .orders-table td {
     padding: 12px 8px;       /* space inside each cell */
@@ -202,7 +210,6 @@ nav a {
     vertical-align: middle;  /* center rows vertically */
     border-bottom: 1px solid #ddd;
 }
-
 .orders-table th:first-child,
 .orders-table td:first-child {
     width: 40px;             /* reserve room for the status bullet */
@@ -227,9 +234,148 @@ nav a {
     max-width: 400px;
     margin: 0 auto;
 }
-
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
+}
+.login-fields {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.login-fields .form-group {
+    flex: 1;
+    min-width: 160px;
+}
+
+/* All orders / alle-ordrer.html */
+.orders-section {
+    margin-top: 30px;
+}
+.orders-header {
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1rem;
+}
+.orders-filters {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+.filter-dropdown {
+    border: none;
+    background: none;
+    appearance: none;         /* fjerner standardpil i mange browsere */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: 1rem;
+    font-weight: bold;
+    color: inherit;
+    cursor: pointer;
+    padding-right: 20px;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+/* Ordre-oversigt.html before it is sent to customer*/
+.customer-summary {
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.8;
+}
+.contact-info {
+    text-align: right;
+}
+.message-section {
+    max-width: 600px;
+    line-height: 1.6;
+}
+.carport-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+.price-section-order-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 40px;
+}
+.final-message {
+    line-height: 1.6;
+}
+
+/* Ordre-detaljer */
+.seller-customer-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.seller-section {
+    text-align: right;
+    min-width: 200px;
+    margin-top: 15px;
+}
+.customer-section-details {
+    line-height: 1.8;
+}
+.order-status-date-section {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-top: 30px;
+}
+.carport-form {
+    width: 50%;
+    line-height: 2;
+}
+.carport-form h2 {
+    margin-top: 50px;
+}
+.sketch-section h2 {
+    margin-top: 50px;
+    line-height: 2;
+}
+.carport-and-sketch {
+    display: flex;
+    gap: 3rem; /* eller hvad der ser godt ud */
+    align-items: flex-start; /* så toppen af begge sektioner flugter */
+}
+.carport-and-sketch .form-section,
+.carport-and-sketch .sketch-section {
+    flex: 1; /* gør dem lige brede - kan også justeres til fx 2 og 1 */
+}
+.material-list-section {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 50px;
+}
+.material-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+.material-table th,
+.material-table td {
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #ccc;
+}
+.material-table thead {
+    font-weight: bold;
+}
+.price-and-calc-row {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 70px;
+}
+.price-row p {
+    font-weight: bold;
 }
 
 /* Footer */
