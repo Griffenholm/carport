@@ -7,13 +7,16 @@ import app.persistence.UserMapper;
 import app.persistence.CarportMapper;
 import app.services.CarportSvg;
 import app.services.Calculator;
+import app.services.GmailEmailSenderHTML;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import jakarta.mail.MessagingException;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class OrderController {
 
@@ -154,10 +157,31 @@ public class OrderController {
             order.setShedLength(shedLength != null ? shedLength : 0);
             // Add the generated SVG to the order
             order.setSvg(svgString);
-            // Sæt ordredatoen automatisk til dags dato
+            // Set order date automatically to today's date
             order.setOrderDate(LocalDate.now());
 
             orderMapper.saveOrder(order);
+            // Send email to customer
+            try {
+                GmailEmailSenderHTML emailSender = new GmailEmailSenderHTML();
+
+                // Write variables to from the order
+                Map<String, Object> variables = Map.of(
+                        "title", "Tak for din bestilling!",
+                        "name", customer.getName(),
+                        "orderId", order.getOrderId(),
+                        "salesperson", salesperson.getName(),
+                        "salespersonNumber", salesperson.getPhoneNumber()
+                );
+
+                String html = emailSender.renderTemplate("ordre-email.html", variables);
+                emailSender.sendHtmlEmail(customer.getEmail(), "Tak for din bestilling hos Fog Carporte", html);
+
+            } catch (MessagingException e) {
+                System.err.println("Fejl ved afsendelse af e-mail: " + e.getMessage());
+                e.printStackTrace();
+            }
+
 
             // Save orderlines to database
             List<Orderline> orderlines = calculator.getOrderlines();

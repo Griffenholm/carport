@@ -75,7 +75,7 @@ public class GmailEmailSenderHTML {
                 "salespersonNumber", "99 88 77 66"
         );
 
-        String html = sender.renderTemplate("offerEmail.html", variables); // bruger templates/orderEmail.html
+        String html = sender.renderTemplate("tilbud-email.html", variables); // bruger templates/ordre-email.html
 
         try {
             sender.sendHtmlEmail(to, subject, html);
