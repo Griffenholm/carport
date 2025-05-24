@@ -8,16 +8,13 @@ import app.persistence.CarportMapper;
 import app.services.CarportSvg;
 import app.services.Calculator;
 import app.services.EmailSender;
-import app.services.GmailEmailSenderHTML;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
-import jakarta.mail.MessagingException;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class OrderController {
 
@@ -72,33 +69,6 @@ public class OrderController {
             // Show the seller a succes message
             ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
             ctx.redirect("/admin/alle-ordrer");
-        });
-
-        // Admin login
-        app.get("/login", ctx -> ctx.render("login.html"));
-
-        app.post("/login", ctx -> {
-            String email = ctx.formParam("email");
-            String password = ctx.formParam("password");
-
-            try {
-                Salesperson salesperson = userMapper.getSalespersonByEmailAndPassword(email, password);
-                if (salesperson != null && salesperson.isAdmin()) {
-                    ctx.sessionAttribute("currentUser", salesperson);
-                    ctx.redirect("/admin/alle-ordrer");
-                } else {
-                    ctx.attribute("error", "Ugyldige loginoplysninger eller manglende adgang.");
-                    ctx.render("login.html");
-                }
-            } catch (Exception e) {
-                ctx.attribute("error", "Login mislykkedes.");
-                ctx.render("login.html");
-            }
-        });
-        // Admin logout
-        app.get("/logout", ctx -> {
-            ctx.req().getSession().invalidate();
-            ctx.redirect("/login");
         });
     }
 
@@ -257,7 +227,7 @@ public class OrderController {
     }
 
     public void showOrdersPage(Context ctx) {
-        if (!isAdmin(ctx)) {
+        if (!UserController.isAdmin(ctx)) {
             ctx.redirect("/login");
             return;
         }
@@ -273,7 +243,7 @@ public class OrderController {
                 ctx.sessionAttribute("message", null); // remove after viewing
             }
             ctx.attribute("orders", orders);
-            addAdminNameAttribute(ctx); // Admin name
+            UserController.addAdminNameAttribute(ctx); // Admin name
             ctx.render("alle-ordrer.html");
 
         } catch (SQLException e) {
@@ -283,7 +253,7 @@ public class OrderController {
     }
 
     private void showOrderDetails(Context ctx) {
-        if (!isAdmin(ctx)) {
+        if (!UserController.isAdmin(ctx)) {
             ctx.redirect("/login");
             return;
         }
@@ -307,7 +277,7 @@ public class OrderController {
     }
 
     private void updateFullOrder(Context ctx) {
-        if (!isAdmin(ctx)) {
+        if (!UserController.isAdmin(ctx)) {
             ctx.redirect("/login");
             return;
         }
@@ -351,17 +321,4 @@ public class OrderController {
             ctx.status(400).result("Kunne ikke opdatere ordren.");
         }
     }
-
-    private boolean isAdmin(Context ctx) {
-        Salesperson user = ctx.sessionAttribute("currentUser");
-        return user != null && user.isAdmin();
-    }
-
-    private void addAdminNameAttribute(Context ctx) {
-        Salesperson user = ctx.sessionAttribute("currentUser");
-        if (user != null && user.isAdmin()) {
-            ctx.attribute("adminName", user.getName());
-        }
-    }
-
 }
