@@ -35,41 +35,54 @@ public class OrderController {
         app.get("/summary", this::showSummary);
         app.get("/", this::showOrder);
         app.post("/update-sketch", this::updateSketch);
-        app.get("/admin/alle-ordrer", ctx -> showOrdersPage(ctx));
-        app.get("/admin/ordre/{id}", this::showOrderDetails);
         app.get("/city/{zip}", this::getCityByZip);
-        app.get("/tak-for-din-ordre", ctx -> {
-            Order order = ctx.sessionAttribute("order");
-            if (order != null) {
-                ctx.render("tak-for-din-ordre.html");
-            } else {
-                ctx.redirect("/");
-            }
-        });
-        app.post("/admin/update-order", this::updateFullOrder);
 
-        app.get("/admin/ordre/preview/{id}", ctx -> {
-            int orderId = Integer.parseInt(ctx.pathParam("id"));
+        app.get("/tak-for-din-ordre", this::showThankYouPage);
+
+        // Admin routes
+        app.get("/admin/alle-ordrer", this::showOrdersPage);
+        app.get("/admin/ordre/{id}", this::showOrderDetails);
+        app.get("/admin/ordre/preview/{id}", this::previewOrder);
+        app.post("/admin/ordre/send", this::sendOrderToCustomer);
+        app.post("/admin/update-order", this::updateFullOrder);
+    }
+
+    private void showThankYouPage(Context ctx) {
+        Order order = ctx.sessionAttribute("order");
+        if (order != null) {
+            ctx.render("tak-for-din-ordre.html");
+        } else {
+            ctx.redirect("/");
+        }
+    }
+
+    private void previewOrder(Context ctx) {
+        int orderId = Integer.parseInt(ctx.pathParam("id"));
+        try {
             Order order = orderMapper.getOrderById(orderId);
             ctx.attribute("order", order);
             ctx.render("ordre-oversigt.html");
-        });
+        } catch (SQLException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved hentning af ordre.");
+        }
+    }
 
-        app.post("/admin/ordre/send", ctx -> {
+    private void sendOrderToCustomer(Context ctx) {
+        try {
             int orderId = Integer.parseInt(ctx.formParam("orderId"));
             orderMapper.updateOrderStatus(orderId, "Sendt til kunde");
-            // Send email to customer
-            try {
-                Order order = orderMapper.getOrderById(orderId);
-                EmailSender emailSender = new EmailSender();
-                emailSender.sendFinalOfferEmail(order);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            // Show the seller a succes message
+
+            Order order = orderMapper.getOrderById(orderId);
+            EmailSender emailSender = new EmailSender();
+            emailSender.sendFinalOfferEmail(order);
+
             ctx.sessionAttribute("message", "Tilbud sendt til kunden.");
             ctx.redirect("/admin/alle-ordrer");
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved afsendelse af e-mail.");
+        }
     }
 
     private void handleOrder(Context ctx) {
