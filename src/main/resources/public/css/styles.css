@@ -105,7 +105,6 @@ tbody tr:hover {
 
 /* Header */
 header {
-    background-color: white;
     padding: 20px 0;
 }
 .header-logo img {
@@ -121,6 +120,17 @@ nav a {
     text-decoration: none;
     color: #000;
     font-weight: bold;
+}
+.header-logout {
+    margin-left:auto
+}
+.header-logout a {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+.header-logout a:hover {
+    color: #003f7d;
 }
 
 /* Customer Frontpage */
@@ -189,12 +199,10 @@ nav a {
 }
 
 /* Admin Orders Table */
-
 .orders-table {
     width: 100%;
     border-collapse: collapse;
 }
-
 .orders-table th,
 .orders-table td {
     padding: 12px 8px;       /* space inside each cell */
@@ -202,7 +210,6 @@ nav a {
     vertical-align: middle;  /* center rows vertically */
     border-bottom: 1px solid #ddd;
 }
-
 .orders-table th:first-child,
 .orders-table td:first-child {
     width: 40px;             /* reserve room for the status bullet */
@@ -239,9 +246,39 @@ nav a {
     flex: 1;
     min-width: 160px;
 }
+/* Alle ordrer */
+.orders-section {
+    margin-top: 30px;
+}
+.orders-header {
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-bottom:1rem;
+}
+.orders-filters {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+.filter-dropdown {
+    border: none;
+    background: none;
+    appearance: none;         /* fjerner standardpil i mange browsere */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-size: 1rem;
+    font-weight: bold;
+    color: inherit;
+    cursor: pointer;
+    padding-right: 20px;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23000' stroke-width='2' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right center;
+}
 
-
-/* Footer */
+    /* Footer */
 footer {
     border-top: 1px solid #ccc;
     font-size: 14px;

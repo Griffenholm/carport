@@ -23,7 +23,7 @@
                 <a th:href="@{/admin/alle-ordrer}">Alle ordrer</a>
             </nav>
 
-            <div class="header-logout" style="margin-left:auto;">
+            <div class="header-logout">
                 <a th:href="@{/logout}">Log ud</a>
             </div>
         </div>
@@ -40,73 +40,64 @@
         <h1>Hej <span th:text="${adminName}">Sælger</span></h1>
         <section class="orders-section">
             <!-- Sub-heading + search -->
-            <div class="orders-header"
-                 style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem;">
-                <h2>
+            <div class="orders-header">
+                <h3>
                     Kunder
                     (<span th:text="${orders.size()}">0</span>)
-                </h2>
-                <form th:action="@{/admin/orders}" method="get"
-                      class="search-form"
-                      style="display:flex; align-items:center; gap:0.5rem;">
-                    <input type="search" name="search" placeholder="🔍 Søg"/>
+                </h3>
+                <form th:action="@{/admin/orders}" method="get">
+                    <input type="search" name="search" placeholder="Søg"/>
                 </form>
             </div>
 
-            <!-- Filters -->
-            <div class="orders-filters"
-                 style="display:flex; align-items:center; gap:2rem; margin-bottom:1rem;">
-                <label>
-                    Status (alle)
-                    <select th:field="*{statusFilter}">
-                        <option value="">Alle</option>
-                        <option th:each="opt : ${statusOptions}"
-                                th:value="${opt}"
-                                th:text="${opt}">[status]</option>
-                    </select>
-                </label>
-
-                <label>
-                    Sælger (alle)
-                    <select th:field="*{sellerFilter}">
-                        <option value="">Alle</option>
-                        <option th:each="opt : ${sellerOptions}"
-                                th:value="${opt}"
-                                th:text="${opt}">[seller]</option>
-                    </select>
-                </label>
-            </div>
-
             <!-- Orders table -->
-            <table class="orders-table">
-                <thead>
-                <tr>
-                    <th><!-- bullet --></th>
-                    <th>Status</th>
-                    <th>Sælger</th>
-                    <th>Dato</th>
-                    <th>Ordre nr.</th>
-                    <th>Kundenavn</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="order : ${orders}"
-                    th:href="@{/admin/ordre/{id}(id=${order.orderId})}"
-                    style="cursor: pointer;"
-                    onclick="window.location.href=this.getAttribute('href')">
+            <form method="get" th:action="@{/admin/alle-ordrer}">
+                <table class="orders-table">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            <select name="status" class="filter-dropdown" onchange="this.form.submit()">
+                                <option value="">Status</option>
+                                <option th:each="opt : ${statusOptions}"
+                                        th:value="${opt}"
+                                        th:text="${opt}"
+                                        th:selected="${param.status == opt}">
+                                </option>
+                            </select>
+                        </th>
+                        <th>
+                            <select name="salesperson" class="filter-dropdown" onchange="this.form.submit()">
+                                <option value="">Sælger</option>
+                                <option th:each="opt : ${sellerOptions}"
+                                        th:value="${opt}"
+                                        th:text="${opt}"
+                                        th:selected="${param.salesperson == opt}">
+                                </option>
+                            </select>
+                        </th>
+                        <th>Dato</th>
+                        <th>Ordre nr.</th>
+                        <th>Kundenavn</th>
+                    </tr>
+                    </thead>
 
-                    <td>
-                        <span class="status-indicator" style="color: grey;">•</span>
-                    </td>
-                    <td th:text="${order.status}">Ingen status</td>
-                    <td th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}"></td>
-                    <td th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</td>
-                    <td th:text="${order.orderId}">0000</td>
-                    <td th:text="${order.customer.name != null ? order.customer.name : 'Ukendt kunde'}">Ukendt kunde</td>
-                </tr>
-                </tbody>
+                    <tbody>
+                    <tr th:each="order : ${orders}"
+                        th:href="@{/admin/ordre/{id}(id=${order.orderId})}"
+                        style="cursor: pointer;"
+                        onclick="window.location.href=this.getAttribute('href')">
 
-            </table>
+                        <td><span class="status-indicator" style="color: grey;">•</span></td>
+                        <td th:text="${order.status}">Ingen status</td>
+                        <td th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}"></td>
+                        <td th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">Ingen dato</td>
+                        <td th:text="${order.orderId}">0000</td>
+                        <td th:text="${order.customer.name != null ? order.customer.name : 'Ukendt kunde'}">Ukendt kunde</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
         </section>
     </div>
 </main>

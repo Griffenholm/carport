@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class OrderController {
 
@@ -244,19 +245,54 @@ public class OrderController {
             ctx.redirect("/login");
             return;
         }
+
         try {
+            String statusFilter = ctx.queryParam("status");
+            String sellerFilter = ctx.queryParam("salesperson");
+
             List<Order> orders = orderMapper.getAllOrdersForSalesPerson();
             if (orders == null) {
                 orders = new ArrayList<>();
             }
-            // Get message from session and send to Thymeleaf
+
+            // Filtrér efter status
+            if (statusFilter != null && !statusFilter.isBlank()) {
+                orders.removeIf(order -> !statusFilter.equals(order.getStatus()));
+            }
+
+            // Filtrér efter sælger
+            if (sellerFilter != null && !sellerFilter.isBlank()) {
+                orders.removeIf(order -> order.getSalesperson() == null || !sellerFilter.equals(order.getSalesperson().getName()));
+            }
+
+            // Unikke statusværdier og sælgernavne til dropdowns
+            List<String> statusOptions = orders.stream()
+                    .map(Order::getStatus)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .sorted()
+                    .toList();
+
+            List<String> sellerOptions = orders.stream()
+                    .map(Order::getSalesperson)
+                    .filter(Objects::nonNull)
+                    .map(Salesperson::getName)
+                    .distinct()
+                    .sorted()
+                    .toList();
+
+            // Success-besked fra session
             String message = ctx.sessionAttribute("message");
             if (message != null) {
                 ctx.attribute("message", message);
-                ctx.sessionAttribute("message", null); // remove after viewing
+                ctx.sessionAttribute("message", null);
             }
+
+            // Send til Thymeleaf
             ctx.attribute("orders", orders);
-            UserController.addAdminNameAttribute(ctx); // Admin name
+            ctx.attribute("statusOptions", statusOptions);
+            ctx.attribute("sellerOptions", sellerOptions);
+            UserController.addAdminNameAttribute(ctx);
             ctx.render("alle-ordrer.html");
 
         } catch (SQLException e) {
