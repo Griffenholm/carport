@@ -17,7 +17,7 @@ public class GmailEmailSenderHTML {
     private final TemplateEngine templateEngine;
 
     public GmailEmailSenderHTML() {
-        // Hent login fra miljøvariabler
+        // Get login from environment variables
         this.username = System.getenv("MAIL_USERNAME");
         this.password = System.getenv("MAIL_PASSWORD");
 
@@ -25,7 +25,7 @@ public class GmailEmailSenderHTML {
             throw new IllegalStateException("MAIL_USERNAME og MAIL_PASSWORD miljøvariabler skal være sat.");
         }
 
-        // Genbrug konfiguration fra ThymeleafConfig
+        // Reuse the configuration from ThymeleafConfig
         this.templateEngine = ThymeleafConfig.templateEngine();
     }
 
@@ -57,7 +57,7 @@ public class GmailEmailSenderHTML {
         Transport.send(message);
     }
 
-    // 🧪 Main-metode til test
+    // 🧪 Main-method for testing
     public static void main(String[] args) {
         GmailEmailSenderHTML sender = new GmailEmailSenderHTML();
 

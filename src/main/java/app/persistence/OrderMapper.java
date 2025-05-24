@@ -67,23 +67,23 @@ public class OrderMapper {
     public List<Order> getAllOrdersForSalesPerson() throws SQLException {
         List<Order> orders = new ArrayList<>();
         String sql = """
-            SELECT
-                o.order_id,
-                o.status,
-                o.order_date,
-                c.name AS customer_name,
-                c.address AS customer_address,
-                c.zip AS customer_zip,
-                ci.city_name AS customer_city,
-                c.email AS customer_email,
-                c.phone_number AS customer_phone_number,
-                s.salesperson_id,
-                s.name AS salesperson_name
-            FROM orders o
-            LEFT JOIN customer c ON o.customer_number = c.phone_number
-            LEFT JOIN city ci ON c.zip = ci.zip
-            LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
-            """;
+                SELECT
+                    o.order_id,
+                    o.status,
+                    o.order_date,
+                    c.name AS customer_name,
+                    c.address AS customer_address,
+                    c.zip AS customer_zip,
+                    ci.city_name AS customer_city,
+                    c.email AS customer_email,
+                    c.phone_number AS customer_phone_number,
+                    s.salesperson_id,
+                    s.name AS salesperson_name
+                FROM orders o
+                LEFT JOIN customer c ON o.customer_number = c.phone_number
+                LEFT JOIN city ci ON c.zip = ci.zip
+                LEFT JOIN salesperson s ON o.salesperson_id = s.salesperson_id;
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -200,7 +200,6 @@ public class OrderMapper {
                         salesperson.setPhoneNumber(rs.getInt("salesperson_phone"));
                         order.setSalesperson(salesperson);
                     }
-
                     return order;
                 }
             }
@@ -209,18 +208,15 @@ public class OrderMapper {
     }
 
 
-
-    public List<Order> getAllOrders() throws DatabaseException
-    {
+    public List<Order> getAllOrders() throws DatabaseException {
         List<Order> orderList = new ArrayList<>();
         String sql = "SELECT * FROM orders INNER JOIN customer USING (customer_number) INNER JOIN salesperson USING (salesperson_id)";
-        try(
+        try (
                 Connection connection = connectionPool.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery();
-        )
-        {
-            while(rs.next()){
+        ) {
+            while (rs.next()) {
                 int customerNumber = rs.getInt("phone_number");
                 String name = rs.getString("name");
                 String address = rs.getString("address");
@@ -238,34 +234,30 @@ public class OrderMapper {
                 Order order = new Order(orderId, carportHeight, carportLength, carportWidth, price, status, deliveryDate, customer);
                 orderList.add(order);
             }
-         }
-        catch (SQLException e){
+        } catch (SQLException e) {
             throw new DatabaseException("Could not get orders from database", e.getMessage());
         }
         return orderList;
     }
 
-    public List<Orderline> getOrderlineListByOrderId(int orderId) throws DatabaseException
-    {
-     List<Orderline> OrderlineList = new ArrayList<>();
-     String sql = "SELECT * FROM bill_of_materials_view WHERE order_id = ?";
+    public List<Orderline> getOrderlineListByOrderId(int orderId) throws DatabaseException {
+        List<Orderline> OrderlineList = new ArrayList<>();
+        String sql = "SELECT * FROM bill_of_materials_view WHERE order_id = ?";
 
-     try(
-             Connection connection = connectionPool.getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql);
-        )
-        {
-         ps.setInt(1, orderId);
-         ResultSet rs = ps.executeQuery();
-         while (rs.next())
-            {
+        try (
+                Connection connection = connectionPool.getConnection();
+                PreparedStatement ps = connection.prepareStatement(sql);
+        ) {
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 // Order
                 int carportWidth = rs.getInt("carport_width");
                 int carportLength = rs.getInt("carport_length");
                 String status = rs.getString("status");
                 double orderPrice = rs.getDouble("order_price");
                 LocalDate orderDate = rs.getDate("order_date").toLocalDate();
-                Order order = new Order (orderId, carportWidth, carportLength, orderPrice, status, orderDate);
+                Order order = new Order(orderId, carportWidth, carportLength, orderPrice, status, orderDate);
 
                 // Material
                 int materialId = rs.getInt("material_id");
@@ -283,28 +275,24 @@ public class OrderMapper {
                 int orderlineId = rs.getInt("orderline_id");
                 int quantity = rs.getInt("quantity");
                 double orderlinePrice = rs.getDouble("orderline_price");
-                Orderline orderline = new Orderline (orderlineId, order, variant, quantity, "", orderlinePrice);
+                Orderline orderline = new Orderline(orderlineId, order, variant, quantity, "", orderlinePrice);
                 OrderlineList.add(orderline);
             }
-        }
-     catch (SQLException e){
+        } catch (SQLException e) {
             throw new DatabaseException("Could not get orderline from database", e.getMessage());
         }
         return OrderlineList;
 
     }
 
-    public void insertOrderline(List<Orderline> orderlines) throws DatabaseException
-    {
+    public void insertOrderline(List<Orderline> orderlines) throws DatabaseException {
         String sql = "INSERT INTO orderline (order_id, variant_id, quantity, build_description, orderline_price)" +
-                     "VALUES (?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?)";
 
-        try(Connection connection = connectionPool.getConnection())
-        {
-            for(Orderline orderline : orderlines){
+        try (Connection connection = connectionPool.getConnection()) {
+            for (Orderline orderline : orderlines) {
 
-                try(PreparedStatement ps = connection.prepareStatement(sql))
-                {
+                try (PreparedStatement ps = connection.prepareStatement(sql)) {
                     ps.setInt(1, orderline.getOrder().getOrderId());
                     ps.setInt(2, orderline.getVariant().getVariantId());
                     ps.setInt(3, orderline.getQuantity());
@@ -313,25 +301,23 @@ public class OrderMapper {
                     ps.executeUpdate();
                 }
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new DatabaseException("Could not insert orderline into database", e.getMessage());
         }
     }
 
     public void updateFullOrder(Order order) throws SQLException {
         String sql = """
-        UPDATE orders SET 
-            carport_height = ?, 
-            carport_width = ?, 
-            carport_length = ?, 
-            shed_width = ?, 
-            shed_length = ?, 
-            order_price = ?, 
-            svg = ?
-        WHERE order_id = ?
-        """;
+                UPDATE orders SET
+                    carport_height = ?,
+                    carport_width = ?,
+                    carport_length = ?,
+                    shed_width = ?,
+                    shed_length = ?,
+                    order_price = ?,
+                    svg = ?
+                WHERE order_id = ?
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -348,6 +334,7 @@ public class OrderMapper {
             stmt.executeUpdate();
         }
     }
+
     public void updateOrderStatus(int orderId, String newStatus) throws SQLException {
         String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
         try (Connection conn = connectionPool.getConnection();
@@ -406,11 +393,12 @@ public class OrderMapper {
 
         return orderlines;
     }
+
     public void saveOrderlines(List<Orderline> orderlines, int orderId) throws SQLException {
         String sql = """
-        INSERT INTO orderline (order_id, variant_id, quantity, build_description, orderline_price)
-        VALUES (?, ?, ?, ?, ?)
-    """;
+                    INSERT INTO orderline (order_id, variant_id, quantity, build_description, orderline_price)
+                    VALUES (?, ?, ?, ?, ?)
+                """;
 
         try (Connection conn = connectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -423,7 +411,6 @@ public class OrderMapper {
                 ps.setDouble(5, orderline.getOrderlinePrice());
                 ps.addBatch();  // Optimized batch insert
             }
-
             ps.executeBatch(); // Execute all at once
         }
     }

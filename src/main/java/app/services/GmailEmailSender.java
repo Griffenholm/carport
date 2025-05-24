@@ -45,7 +45,7 @@ public class GmailEmailSender {
         System.out.println("Email sent successfully to " + receiver);
     }
 
-    // 🧪 Main-metode til test
+    // 🧪 Main-method for testing
     public static void main(String[] args) {
         GmailEmailSender sender = new GmailEmailSender();
 

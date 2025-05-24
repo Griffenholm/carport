@@ -1,7 +1,5 @@
 package app.services;
-import app.entities.Customer;
 import app.entities.Order;
-import org.thymeleaf.context.Context;
 
 import jakarta.mail.MessagingException;
 import java.util.Map;

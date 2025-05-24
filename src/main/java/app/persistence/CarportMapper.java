@@ -31,7 +31,6 @@ public class CarportMapper {
                 roofMaterials.add(rs.getString("name"));
             }
         }
-
         return roofMaterials;
     }
 }

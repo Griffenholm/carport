@@ -15,34 +15,37 @@ public class UserController {
     }
 
     public void addRoutes(Javalin app) {
-        // Login-side
-        app.get("/login", ctx -> ctx.render("login.html"));
+        app.get("/login", this::showLoginPage);
+        app.post("/login", this::handleLogin);
+        app.get("/logout", this::handleLogout);
+    }
 
-        // Login
-        app.post("/login", ctx -> {
-            String email = ctx.formParam("email");
-            String password = ctx.formParam("password");
+    private void showLoginPage(Context ctx) {
+        ctx.render("login.html");
+    }
 
-            try {
-                Salesperson salesperson = userMapper.getSalespersonByEmailAndPassword(email, password);
-                if (salesperson != null && salesperson.isAdmin()) {
-                    ctx.sessionAttribute("currentUser", salesperson);
-                    ctx.redirect("/admin/alle-ordrer");
-                } else {
-                    ctx.attribute("error", "Ugyldige loginoplysninger eller manglende adgang.");
-                    ctx.render("login.html");
-                }
-            } catch (Exception e) {
-                ctx.attribute("error", "Login mislykkedes.");
+    private void handleLogin(Context ctx) {
+        String email = ctx.formParam("email");
+        String password = ctx.formParam("password");
+
+        try {
+            Salesperson salesperson = userMapper.getSalespersonByEmailAndPassword(email, password);
+            if (salesperson != null && salesperson.isAdmin()) {
+                ctx.sessionAttribute("currentUser", salesperson);
+                ctx.redirect("/admin/alle-ordrer");
+            } else {
+                ctx.attribute("error", "Ugyldige loginoplysninger eller manglende adgang.");
                 ctx.render("login.html");
             }
-        });
+        } catch (Exception e) {
+            ctx.attribute("error", "Login mislykkedes.");
+            ctx.render("login.html");
+        }
+    }
 
-        // Logout
-        app.get("/logout", ctx -> {
-            ctx.req().getSession().invalidate();
-            ctx.redirect("/login");
-        });
+    private void handleLogout(Context ctx) {
+        ctx.req().getSession().invalidate();
+        ctx.redirect("/login");
     }
 
     // Used by other controllers
