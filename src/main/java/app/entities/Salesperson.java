@@ -28,6 +28,14 @@ public class Salesperson {
         this.phoneNumber = phoneNumber;
     }
 
+    public int getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(int phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public int getSalespersonId() {
         return salespersonId;
     }

@@ -6,14 +6,12 @@ import app.persistence.*;
 
 import java.util.*;
 
-public class Calculator
-{
+public class Calculator {
 
     private static final int POSTS = 6;
     private static final int RAFTERS = 5;
     private static final int BEAMS = 5;
     private static final double MULTIPLIER = 5;
-
 
     private List<Orderline> orderlines = new ArrayList<>();
     private int width;
@@ -21,25 +19,21 @@ public class Calculator
     private ConnectionPool connectionPool;
     private MaterialMapper materialMapper;
 
-
-    public Calculator(int width, int length, ConnectionPool connectionPool)
-    {
+    public Calculator(int width, int length, ConnectionPool connectionPool) {
         this.width = width;
         this.length = length;
         this.connectionPool = connectionPool;
         this.materialMapper = new MaterialMapper(connectionPool);
     }
 
-    public void calcCarport(Order order) throws DatabaseException
-    {
+    public void calcCarport(Order order) throws DatabaseException {
         calcPost(order);
         calcBeams(order);
         calcRafters(order);
     }
 
     //Stolper
-    public void calcPost(Order order) throws DatabaseException
-    {
+    public void calcPost(Order order) throws DatabaseException {
         int quantity = calcPostQuantity();
 
         List<Variant> variants = materialMapper.getMaterialVariantsByMaterialIdAndMinLength(1, POSTS, connectionPool);
@@ -48,22 +42,19 @@ public class Calculator
         orderlines.add(orderline);
     }
 
-    public int calcPostQuantity()
-    {
+    public int calcPostQuantity() {
         return 4 + (2 * ((length - 300) / 300));
     }
 
     //Remme
-    public void calcBeams(Order order) throws DatabaseException
-    {
+    public void calcBeams(Order order) throws DatabaseException {
 
         List<Variant> availableVariants = materialMapper.getMaterialVariantsByMaterialIdAndMinLength(300, BEAMS, connectionPool);
 
         Map<Variant, Integer> variantCountMap = calculateBeamVariantQuantities(length, availableVariants);
 
         //Convert the map to a list of orderlines
-        for (Map.Entry<Variant, Integer> entry : variantCountMap.entrySet())
-        {
+        for (Map.Entry<Variant, Integer> entry : variantCountMap.entrySet()) {
             Variant variant = entry.getKey();
             int quantity = entry.getValue();
             Orderline orderline = new Orderline(0, order, variant, quantity, "Remme til sider, sadles ned i stoper", (variant.getMaterial().getPrice() * variant.getLength() * quantity));
@@ -71,8 +62,7 @@ public class Calculator
         }
     }
 
-    public Map<Variant, Integer> calculateBeamVariantQuantities(int length, List<Variant> availableVariants)
-    {
+    public Map<Variant, Integer> calculateBeamVariantQuantities(int length, List<Variant> availableVariants) {
         availableVariants.sort(Comparator.comparingInt(Variant::getLength).reversed());
 
         int remainingLength = length * 2;
@@ -95,13 +85,11 @@ public class Calculator
                 remainingLength = 0;
             }
         }
-
         return variantCountMap;
     }
 
     //Spær
-    public void calcRafters(Order order) throws DatabaseException
-    {
+    public void calcRafters(Order order) throws DatabaseException {
         List<Variant> availableVariants = materialMapper.getMaterialVariantsByMaterialIdAndMinLength(300, RAFTERS, connectionPool);
 
         availableVariants.sort(Comparator.comparingInt(Variant::getLength));
@@ -112,13 +100,12 @@ public class Calculator
             Variant variant = entry.getKey();
             int quantity = entry.getValue();
 
-            Orderline orderline = new Orderline (0, order, variant, quantity, "Spær, montores på remme", (variant.getMaterial().getPrice() * quantity));
+            Orderline orderline = new Orderline(0, order, variant, quantity, "Spær, montores på remme", (variant.getMaterial().getPrice() * quantity));
             orderlines.add(orderline);
         }
     }
 
-    public Map<Variant, Integer> calculateRafterVariantQuantities(int length, int width, List<Variant> variants) throws DatabaseException
-    {
+    public Map<Variant, Integer> calculateRafterVariantQuantities(int length, int width, List<Variant> variants) throws DatabaseException {
         variants.sort(Comparator.comparingInt(Variant::getLength));
 
         Variant selectedVariant = null;
@@ -145,8 +132,7 @@ public class Calculator
         return variantCountMap;
     }
 
-    public List<Orderline> getOrderlines()
-    {
+    public List<Orderline> getOrderlines() {
         return orderlines;
     }
 
@@ -159,5 +145,4 @@ public class Calculator
         order.setCostPrice(costPrice);
         order.setPrice(price);
     }
-    
 }
