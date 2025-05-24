@@ -246,7 +246,8 @@ nav a {
     flex: 1;
     min-width: 160px;
 }
-/* Alle ordrer */
+
+/* All orders / alle-ordrer.html */
 .orders-section {
     margin-top: 30px;
 }
@@ -278,7 +279,43 @@ nav a {
     background-position: right center;
 }
 
-    /* Footer */
+/* Ordre-oversigt.html before it is send to customer*/
+.customer-summary {
+    display: flex;
+    justify-content: space-between;
+}
+.contact-info {
+    text-align: right;
+}
+.carport-details {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+.price-section-order-details {
+    flex: 1 1 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+
+
+/* Ordre-detaljer */
+.price-and-calc-row {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.price-row p {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Footer */
 footer {
     border-top: 1px solid #ccc;
     font-size: 14px;

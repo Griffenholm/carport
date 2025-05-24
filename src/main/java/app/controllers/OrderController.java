@@ -255,17 +255,17 @@ public class OrderController {
                 orders = new ArrayList<>();
             }
 
-            // Filtrér efter status
+            // Filter after status
             if (statusFilter != null && !statusFilter.isBlank()) {
                 orders.removeIf(order -> !statusFilter.equals(order.getStatus()));
             }
 
-            // Filtrér efter sælger
+            // Filter after seller
             if (sellerFilter != null && !sellerFilter.isBlank()) {
                 orders.removeIf(order -> order.getSalesperson() == null || !sellerFilter.equals(order.getSalesperson().getName()));
             }
 
-            // Unikke statusværdier og sælgernavne til dropdowns
+            // Unique status and seller names for dropdowns
             List<String> statusOptions = orders.stream()
                     .map(Order::getStatus)
                     .filter(Objects::nonNull)
@@ -281,14 +281,14 @@ public class OrderController {
                     .sorted()
                     .toList();
 
-            // Success-besked fra session
+            // Success message from session
             String message = ctx.sessionAttribute("message");
             if (message != null) {
                 ctx.attribute("message", message);
                 ctx.sessionAttribute("message", null);
             }
 
-            // Send til Thymeleaf
+            // Send to Thymeleaf
             ctx.attribute("orders", orders);
             ctx.attribute("statusOptions", statusOptions);
             ctx.attribute("sellerOptions", sellerOptions);

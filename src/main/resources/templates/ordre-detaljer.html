@@ -53,21 +53,25 @@
 
         function calculateProfitAndMargin() {
             const price = parseFloat(document.getElementById("orderPrice").value.replace(",", "."));
-            const costPrice = parseFloat(document.getElementById("costPriceDisplay").value.replace(" kr", "").replace(",", "."));
+            const costPrice = parseFloat(
+                document.getElementById("costPriceDisplay").innerText
+                    .replace(" kr", "")
+                    .replace(/\./g, "")
+                    .replace(",", ".")
+            );
 
             if (!isNaN(price) && !isNaN(costPrice) && costPrice > 0) {
                 const profit = price - costPrice;
                 const margin = (profit / price) * 100;
-
-                document.getElementById("profitDisplay").innerText = profit.toFixed(2).replace(".", ",") + " kr";
-                document.getElementById("marginDisplay").innerText = margin.toFixed(1).replace(".", ",") + " %";
-
+                document.getElementById("profitDisplay").innerText =
+                    profit.toLocaleString('da-DK', { minimumFractionDigits: 2 }) + " kr";
+                document.getElementById("marginDisplay").innerText =
+                    margin.toLocaleString('da-DK', { minimumFractionDigits: 1 }) + " %";
             } else {
                 document.getElementById("profitDisplay").innerText = "0 kr";
                 document.getElementById("marginDisplay").innerText = "0%";
             }
         }
-
         document.addEventListener("DOMContentLoaded", () => {
             // initial calculation
             calculateProfitAndMargin();
@@ -213,26 +217,26 @@
                     </div>
 
                     <!--Price section -->
-                    <div class="price-section">
-                        <p>Vejledende pris: <span
-                                th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 2, 'POINT')} + ' kr'">0000 kr</span>
+                    <div class="price-section-order-details">
+                        <p>Vejledende pris:
+                            <span th:text="${#numbers.formatDecimal(order.price, 0, 'POINT', 2, 'COMMA')} + ' kr'">0 kr</span>
                         </p>
                         <input type="hidden" name="orderId" th:value="${order.orderId}"/>
 
-                        <label for="orderPrice">Endelig pris:</label>
+                        <p> <strong>Endelig pris:
                         <input type="number" id="orderPrice" name="orderPrice" th:value="${order.price}" required/>
-
+                        </strong></p>
                         <!-- Material cost -->
-                        <label>Pris på materialer:
-                            <input type="text" id="costPriceDisplay"
-                                   th:value="${#numbers.formatDecimal(order.costPrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"
-                                   readonly/>
-                        </label>
                         <input type="hidden" name="costPrice" th:value="${order.costPrice}"/>
 
-                        <!-- Calculator -->
-                        <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
-                        <p>Dækningsgrad: <span id="marginDisplay">0%</span></p>
+                        <div class="price-and-calc-row">
+                            <p>Pris på materialer:
+                                <span id="costPriceDisplay"
+                                      th:text="${#numbers.formatDecimal(order.costPrice, 0, 'POINT', 2, 'COMMA')} + ' kr'">0 kr</span>
+                            </p>
+                            <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
+                            <p>Dækningsgrad: <span id="marginDisplay">0%</span></p>
+                        </div>
 
                         <!-- Save button -->
                         <button type="submit">Gem ændringerne
