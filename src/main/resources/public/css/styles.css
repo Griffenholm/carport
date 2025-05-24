@@ -227,10 +227,19 @@ nav a {
     max-width: 400px;
     margin: 0 auto;
 }
-
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
+.login-fields {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.login-fields .form-group {
+    flex: 1;
+    min-width: 160px;
+}
+
 
 /* Footer */
 footer {
