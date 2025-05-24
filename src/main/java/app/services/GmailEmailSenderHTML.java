@@ -62,7 +62,7 @@ public class GmailEmailSenderHTML {
     public static void main(String[] args) {
         GmailEmailSenderHTML sender = new GmailEmailSenderHTML();
 
-        String to = "Enilocin99@gmail.com";   // Erstat med din modtager
+        String receiver = "Enilocin99@gmail.com";   // Erstat med din modtager
         String subject = "HTML test med Thymeleaf - PAYMENT";
 
         // Opret en Thymeleaf kontekst med variabler. Tilføj dine egne værdier.
@@ -78,7 +78,7 @@ public class GmailEmailSenderHTML {
         String html = sender.renderTemplate("tilbud-email.html", variables); // bruger templates/ordre-email.html
 
         try {
-            sender.sendHtmlEmail(to, subject, html);
+            sender.sendHtmlEmail(receiver, subject, html);
         } catch (MessagingException e) {
             e.printStackTrace();
         }

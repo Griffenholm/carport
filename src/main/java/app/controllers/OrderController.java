@@ -161,6 +161,7 @@ public class OrderController {
             order.setOrderDate(LocalDate.now());
 
             orderMapper.saveOrder(order);
+
             // Send email to customer
             try {
                 GmailEmailSenderHTML emailSender = new GmailEmailSenderHTML();
@@ -175,13 +176,12 @@ public class OrderController {
                 );
 
                 String html = emailSender.renderTemplate("ordre-email.html", variables);
-                emailSender.sendHtmlEmail(customer.getEmail(), "Tak for din bestilling hos Fog Carporte", html);
+                emailSender.sendHtmlEmail("Enilocin99@gmail.com", "Tak for din bestilling hos Fog Carporte", html);
 
             } catch (MessagingException e) {
                 System.err.println("Fejl ved afsendelse af e-mail: " + e.getMessage());
                 e.printStackTrace();
             }
-
 
             // Save orderlines to database
             List<Orderline> orderlines = calculator.getOrderlines();
