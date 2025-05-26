@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tak for din forespørgsel</title>
+
+</head>
+<body>
+<main>
+    <div class="container">
+        <h1> Hej</h1> <h1 th:text="${order.customer.name}">Kundenavn</h1>
+
+        <section class="orders-section">
+            <p><strong>Ordredetaljer</strong></p>
+            <p>Sælger: <span
+                    th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span>
+            </p>
+            <p th:text="${order.customer.address}">Adresse</p>
+            <p th:text="${order.customer.zip} + ' ' + ${order.customer.city}">Postnummer og by</p>
+            <p th:text="'Tlf: ' + ${order.customer.phoneNumber}">Telefon</p>
+            <p th:text="'Email: ' + ${order.customer.email}">Email</p>
+
+            <p>Ordre nr: <span th:text="${order.orderId}">0000</span></p>
+            <p th:text="'Ordredato: ' + ${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">
+                Ordredato</p>
+
+                    <!-- Material list -->
+            <div class="material-list-section">
+                <h2>Materialeliste</h2>
+                <table class="material-table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Navn</th>
+                        <th>Længde</th>
+                        <th>Bredde</th>
+                        <th>Højde</th>
+                        <th>Enhed</th>
+                        <th>Antal</th>
+                        <th>Pris</th>
+                        <th>Beskrivelse</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="orderline : ${orderlines}">
+                        <td th:text="${orderline.variant.material.materialId}"></td>
+                        <td th:text="${orderline.variant.material.name}"></td>
+                        <td th:text="${orderline.variant.length} + ' cm'"></td>
+                        <td th:text="${orderline.variant.material.width} + ' mm'"></td>
+                        <td th:text="${orderline.variant.material.height} + ' mm'"></td>
+                        <td th:text="${orderline.variant.material.unit}"></td>
+                        <td th:text="${orderline.quantity}"></td>
+                        <td th:text="${#numbers.formatDecimal(orderline.orderlinePrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"></td>
+                        <td th:text="${orderline.buildDescription}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer>
+    <div class="container footer-container">
+        <p>Johannes Fog A/S</p>
+        <p>Firskovvej 20</p>
+        <p>2800 Lyngby</p>
+        <p>CVR-nr. 16314439</p>
+    </div>
+</footer>
+</body>
+</html>
