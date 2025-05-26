@@ -9,7 +9,7 @@
 <body>
 <main>
     <div class="container">
-        <h1> Hej</h1> <h1 th:text="${order.customer.name}">Kundenavn</h1>
+        <h1>Hej <span th:text="${order.customer.name}">Navn</span></h1>
 
         <section class="orders-section">
             <p><strong>Ordredetaljer</strong></p>
