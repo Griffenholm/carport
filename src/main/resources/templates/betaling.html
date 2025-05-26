@@ -1,39 +1,94 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Tak for din bestilling</title>
-    <link rel="icon" href="/images/fogfavicon.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Betaling</title>
+    <link rel="icon" href="/images/fogfavicon.png" type="image/png"/>
     <link href="../public/css/styles.css" th:href="@{/css/styles.css}" rel="stylesheet"/>
-</head>
 
+</head>
 <body>
 <div class="container">
-    <header>
-        <div class="container header-content">
-            <div class="header-logo">
-                <a href="/" th:href="@{/}">
-                    <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
-                </a>
-            </div>
-            <nav>
-                <a href="/">Bestil byg-selv carport</a>
-            </nav>
+    <header class="header-content">
+        <div class="header-logo">
+            <a href="/" th:href="@{/}">
+                <img src="../public/images/fog_logo.png" th:src="@{/images/fog_logo.png}" alt="Johannes Fog Logo"/>
+            </a>
         </div>
     </header>
+
 </div>
 
 <main>
     <div class="container">
-        <div class="intro-text">
-            <h1>Tak for betaling af din carport!</h1>
-            <p>Du vil straks modtage en email med en stykliste for din carport. Du vil i morgen modtage en mail med leveringsdato og detaljer, når det er kommet på plads.</p>
-            <br><br>
-            <p>Har du spørgsmål? Få hurtigt svar på:
-            <p/>
-            <p><strong>47 16 08 00</strong></p>
+
+        <div class="customer-summary" style="display: flex; justify-content: space-between;">
+            <div>
+                <h2 th:text="${order.customer.name}">Kundenavn</h2>
+                <p th:text="${order.customer.address}">Adresse</p>
+                <p th:text="${order.customer.zip} + ' ' + ${order.customer.city}">Postnummer og by</p>
+                <p th:text="'Tlf: ' + ${order.customer.phoneNumber}">Telefon</p>
+                <p th:text="'Email: ' + ${order.customer.email}">Email</p>
+
+                <p><strong>Ordre nr: </strong><span th:text="${order.orderId}">0000</span></p>
+                <br/>
+                <p>Hej <span th:text="${order.customer.name}">Navn</span></p>
+                <p>Mange tak for en behagelig samtale. Jeg har
+                    <span th:if="${order.shedWidth != null}">tilføjet et redskabsrum og </span>
+                    ændret i dimensionerne som vi talte om, og nu skal det hele gerne passe. Kontakt mig gerne hvis du har nogen spørgsmål. Vi finder en leveringsdato så snart du har betalt for ordren.
+                </p>
+                <p>Vh <span th:text="${order.salesperson.name}">Martin</span></p>
+            </div>
+            <div class="contact-info" style="text-align: right;">
+                <p><strong>Johannes Fog A/S</strong></p>
+                <p>Firskovvej 20</p>
+                <p>2800 Lyngby</p>
+                <p>CVR-nr. 16314439</p>
+                <br/>
+                <p><strong>Kontakt:</strong></p>
+                <p th:text="${order.salesperson.name}">Martin Hansen</p>
+                <p>Tlf: 24 56 44 70</p>
+                <p>mh-salg@fog.dk</p>
+                <p>Dato: <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}">dd/MM/yyyy</span></p>
+            </div>
         </div>
+
+        <div class="carport-details" style="display: flex; justify-content: space-between; margin-top: 2rem;">
+            <div class="form-section">
+                <h3>Carport</h3>
+                <p><strong>Carport bredde</strong><br/><span th:text="${order.carportWidth} + ' cm'"></span></p>
+                <p><strong>Carport længde</strong><br/><span th:text="${order.carportLength} + ' cm'"></span></p>
+                <p><strong>Carport højde</strong><br/><span th:text="${order.carportHeight} + ' cm'"></span></p>
+                <p th:if="${order.shedWidth != null}"><strong>Skur bredde</strong><br/><span th:text="${order.shedWidth} + ' cm'"></span></p>
+                <p th:if="${order.shedLength != null}"><strong>Skur længde</strong><br/><span th:text="${order.shedLength} + ' cm'"></span></p>
+            </div>
+            <div class="sketch-section">
+                <h3>Skitse</h3>
+                <p>Skitse fra siden</p>
+                <div th:utext="${order.svg}"></div>
+            </div>
+        </div>
+
+        <div class="price-section">
+            <p th:text="'Carport på dine mål: ' + ${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')} + ' kr'"></p>
+            <p th:text="'Total uden moms: ' + ${#numbers.formatDecimal(order.price / 1.25, 0, 'COMMA', 0, 'POINT')} + ' kr'"></p>
+            <p th:text="'Moms (25%): ' + ${#numbers.formatDecimal(order.price - (order.price / 1.25), 0, 'COMMA', 0, 'POINT')} + ' kr'"></p>
+            <p><strong th:text="'Total med moms: ' + ${#numbers.formatDecimal(order.price, 0, 'COMMA', 0, 'POINT')} + ' kr'"></strong></p>
+
+            <p>Når du betaler for dit tilbud aftaler vi et tidspunkt for levering sammen.<br/>
+                Regn med at det tager op til 14 dage.<br/>
+                Du vil straks modtage byggevejledning og stykliste online.</p>
+
+            <form th:action="@{/ordre/betal}" method="post">
+                <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                <button type="submit">Betal →</button>
+            </form>
+        </div>
+    </div>
+    </form>
+    </section>
     </div>
 </main>
 
@@ -45,6 +100,5 @@
         <p>CVR-nr. 16314439</p>
     </div>
 </footer>
-
 </body>
 </html>
