@@ -44,4 +44,22 @@ public class EmailSender {
         String html = emailSender.renderTemplate("tilbud-email.html", variables);
         emailSender.sendHtmlEmail("Enilocin99@gmail.com", "Dit carport tilbud er klar", html);
     }
+
+    public void sendMaterialEmail(Order order) throws MessagingException {
+        Map<String, Object> variables = Map.of(
+                "order", order,
+                // "orderlines", order.getOrderLines(), NOT WORKING
+                "name", order.getCustomer().getName(),
+                "orderId", order.getOrderId(),
+                "salesperson", order.getSalesperson().getName(),
+                "address", order.getCustomer().getAddress(),
+                "zip", order.getCustomer().getZip(),
+                "city", order.getCustomer().getCity(),
+                "phone", order.getCustomer().getPhoneNumber(),
+                "email", order.getCustomer().getEmail(),
+                "orderDate", order.getOrderDate()
+        );
+        String html = emailSender.renderTemplate("stykliste-email.html", variables);
+        emailSender.sendHtmlEmail("Enilocin99@gmail.com", "Stykliste", html);
+    }
 }

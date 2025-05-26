@@ -10,6 +10,7 @@ import app.services.Calculator;
 import app.services.EmailSender;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+import jakarta.mail.MessagingException;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -38,6 +39,8 @@ public class OrderController {
         app.get("/city/{zip}", this::getCityByZip);
 
         app.get("/tak-for-din-ordre", this::showThankYouPage);
+        app.post("/ordre/betal", this::handlePayment);
+        app.get("/ordre/betalt", this::showPaymentThankYouPage);
 
         // Admin routes
         app.get("/admin/alle-ordrer", this::showOrdersPage);
@@ -51,6 +54,15 @@ public class OrderController {
         Order order = ctx.sessionAttribute("order");
         if (order != null) {
             ctx.render("tak-for-din-ordre.html");
+        } else {
+            ctx.redirect("/");
+        }
+    }
+
+    private void showPaymentThankYouPage(Context ctx) {
+        Order order = ctx.sessionAttribute("order");
+        if (order != null) {
+            ctx.render("betalt.html");
         } else {
             ctx.redirect("/");
         }
@@ -332,6 +344,25 @@ public class OrderController {
         } catch (Exception e) {
             e.printStackTrace();
             ctx.status(400).result("Kunne ikke opdatere ordren.");
+        }
+    }
+
+    public void handlePayment(Context ctx) throws SQLException
+    {
+        int orderId = Integer.parseInt(ctx.queryParam("orderId"));
+        Order order = orderMapper.getOrderById(orderId);
+
+        try
+        {
+            orderMapper.updateOrderStatus(orderId, "Betalt");
+
+            EmailSender emailSender = new EmailSender();
+            emailSender.sendMaterialEmail(order);
+
+            ctx.redirect("/ordre/betalt");
+        } catch (SQLException | MessagingException e) {
+            e.printStackTrace();
+            ctx.status(500).result("Fejl ved betaling.");
         }
     }
 }
