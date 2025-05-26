@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tak for din forespørgsel</title>
+
 </head>
 
 <body>
 <main>
     <div class="container">
         <div class="intro-text">
-            <h1>Hej <Strong th:text="${name}">Customer Name</Strong></h1>
+            <h1>Hej <Strong th:text="${name}"></Strong></h1>
             <br>
-            <h1>Dit tilbud ligger nu klar til dig.</h1>
-            <p>Du kan se dit endelige tilbud og betale her: <a th:href="'https://www.voresdomæne.dk/Payment?orderId=' + ${orderId}">https://www.voresdomæne.dk/Payment?orderId=</a> </p>
+            <h1>Tak for din forespørgsel</h1>
+            <p><strong>Ordrenummer:</strong> <span th:text="${orderId}">123</span></p>
+            <p>Vi kontakter dig snarest muligt når vi har kigget din anmodning igennem.</p>
             <br><br>
             <p>Har du spørgsmål? Få hurtigt svar på:
-            <p/>
-            <p>Din personlige sælger: <strong th:text="${salesperson}">Sales Person</strong>  <strong th:text="${salespersonNumber}">Sales Person Phone</strong></p>
-            <p>Hovednummer: <strong>47 16 08 00</strong></p>
+            </p>
+            <p><strong>47 16 08 00</strong></p>
         </div>
     </div>
 </main>

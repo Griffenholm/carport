@@ -17,7 +17,7 @@ public class GmailEmailSenderHTML {
     private final TemplateEngine templateEngine;
 
     public GmailEmailSenderHTML() {
-        // Hent login fra miljøvariabler
+        // Get login from environment variables
         this.username = System.getenv("MAIL_USERNAME");
         this.password = System.getenv("MAIL_PASSWORD");
 
@@ -25,7 +25,7 @@ public class GmailEmailSenderHTML {
             throw new IllegalStateException("MAIL_USERNAME og MAIL_PASSWORD miljøvariabler skal være sat.");
         }
 
-        // Genbrug konfiguration fra ThymeleafConfig
+        // Reuse the configuration from ThymeleafConfig
         this.templateEngine = ThymeleafConfig.templateEngine();
     }
 
@@ -55,14 +55,13 @@ public class GmailEmailSenderHTML {
         message.setContent(htmlBody, "text/html; charset=UTF-8");
 
         Transport.send(message);
-        System.out.println("HTML-mail sendt til " + to);
     }
 
-    // 🧪 Main-metode til test
+    // 🧪 Main-method for testing
     public static void main(String[] args) {
         GmailEmailSenderHTML sender = new GmailEmailSenderHTML();
 
-        String to = "Enilocin99@gmail.com";   // Erstat med din modtager
+        String receiver = "Enilocin99@gmail.com";   // Erstat med din modtager
         String subject = "HTML test med Thymeleaf - PAYMENT";
 
         // Opret en Thymeleaf kontekst med variabler. Tilføj dine egne værdier.
@@ -75,10 +74,10 @@ public class GmailEmailSenderHTML {
                 "salespersonNumber", "99 88 77 66"
         );
 
-        String html = sender.renderTemplate("offerEmail.html", variables); // bruger templates/orderEmail.html
+        String html = sender.renderTemplate("tilbud-email.html", variables); // bruger templates/ordre-email.html
 
         try {
-            sender.sendHtmlEmail(to, subject, html);
+            sender.sendHtmlEmail(receiver, subject, html);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
