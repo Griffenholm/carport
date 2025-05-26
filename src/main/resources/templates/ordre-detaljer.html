@@ -53,35 +53,42 @@
 
         function calculateProfitAndMargin() {
             const price = parseFloat(document.getElementById("orderPrice").value.replace(",", "."));
-            const costPrice = parseFloat(document.getElementById("costPriceDisplay").value.replace(" kr", "").replace(",", "."));
+            const costPriceText = document.getElementById("costPriceDisplay").innerText
+                .replace(" kr", "")
+                .replace(/\./g, "")
+                .replace(",", ".");
+
+            const costPrice = parseFloat(costPriceText);
 
             if (!isNaN(price) && !isNaN(costPrice) && costPrice > 0) {
                 const profit = price - costPrice;
                 const margin = (profit / price) * 100;
 
-                document.getElementById("profitDisplay").innerText = profit.toFixed(2).replace(".", ",") + " kr";
-                document.getElementById("marginDisplay").innerText = margin.toFixed(1).replace(".", ",") + " %";
-
+                document.getElementById("profitDisplay").innerText =
+                    profit.toLocaleString('da-DK', { minimumFractionDigits: 2 }) + " kr";
+                document.getElementById("marginDisplay").innerText =
+                    margin.toLocaleString('da-DK', { minimumFractionDigits: 1 }) + " %";
             } else {
                 document.getElementById("profitDisplay").innerText = "0 kr";
                 document.getElementById("marginDisplay").innerText = "0%";
             }
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            // initial calculation
-            calculateProfitAndMargin();
-
-            // calculate again when price is changed
-            document.getElementById("orderPrice").addEventListener("input", calculateProfitAndMargin);
-            document.getElementById("costPriceDisplay").addEventListener("input", calculateProfitAndMargin);
-        });
-
-        window.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
             toggleShedFields();
             calculateProfitAndMargin();
+            // Calculate again if price is changed
+            const orderPriceInput = document.getElementById("orderPrice");
+            if (orderPriceInput) {
+                orderPriceInput.addEventListener("input", calculateProfitAndMargin);
+            }
+            // Mutation observer for future change in price for materials
+            const costSpan = document.getElementById("costPriceDisplay");
+            if (costSpan) {
+                const observer = new MutationObserver(calculateProfitAndMargin);
+                observer.observe(costSpan, { childList: true });
+            }
         });
-
     </script>
 
 </head>
@@ -102,7 +109,6 @@
             </div>
         </div>
     </header>
-</div>
 
 <main>
     <div th:if="${message}" class="success-message">
@@ -110,138 +116,157 @@
     </div>
 
     <div class="container">
-        <p>Sælger: <span
-                th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span>
-        </p>
+        <div class="seller-customer-section">
+            <div class="customer-section-details">
+                <h1 th:text="${order.customer.name}">Kundenavn</h1>
+                <p th:text="${order.customer.address}">Adresse</p>
+                <p th:text="${order.customer.zip} + ' ' + ${order.customer.city}">Postnummer og by</p>
+                <p th:text="'Tlf: ' + ${order.customer.phoneNumber}">Telefon</p>
+                <p th:text="'Email: ' + ${order.customer.email}">Email</p>
+                <p><i>Rédiger adresse</i></p>
+            </div>
 
-        <section class="orders-section">
-            <h1 th:text="${order.customer.name}">Kundenavn</h1>
-            <p th:text="${order.customer.address}">Adresse</p>
-            <p th:text="${order.customer.zip} + ' ' + ${order.customer.city}">Postnummer og by</p>
-            <p th:text="'Tlf: ' + ${order.customer.phoneNumber}">Telefon</p>
-            <p th:text="'Email: ' + ${order.customer.email}">Email</p>
-
-            <p>Ordre nr: <span th:text="${order.orderId}">0000</span></p>
-            <p>Status: <span th:text="${order.status}">Status</span></p>
-            <p th:text="'Ordredato: ' + ${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">
-                Ordredato</p>
-
-            <!-- Carport form -->
-            <form id="carportForm" th:action="@{/admin/update-order}" method="post">
-                <div class="form-section">
-                    <h2>Carport</h2>
-                    <label>Carport bredde
-                        <input type="number" name="carportWidth" th:value="${order.carportWidth}" required/>
-                    </label>
-                    <label>Carport længde
-                        <input type="number" name="carportLength" th:value="${order.carportLength}" required/>
-                    </label>
-                    <label>Carport højde
-                        <input type="number" name="carportHeight" th:value="${order.carportHeight}" required/>
-                    </label>
-
-                    <!-- Shed Section -->
+            <div class="seller-section">
+                <p><strong>Sælger: </strong><span
+                        th:text="${order.salesperson != null ? order.salesperson.name : 'Ukendt sælger'}">Ukendt sælger</span>
+                </p>
+            </div>
+        </div>
+                <div class="order-status-date-section">
+                    <p><strong>Ordre nr: </strong><span th:text="${order.orderId}">0000</span></p>
+                    <p><strong>Status: </strong><span th:text="${order.status}">Status</span></p>
+                    <p>
+                        <strong>Ordredato:</strong>
+                        <span th:text="${order.orderDate != null ? #temporals.format(order.orderDate, 'dd/MM/yyyy') : 'Ingen dato'}">dd/mm/yyyy</span>
+                    </p>
+                </div>
+                <!-- Carport form -->
+                <form id="carportForm" th:action="@{/admin/update-order}" method="post">
                     <div class="form-section">
-                        <h2>Skur</h2>
-                        <label>Redskabsrum
-                            <select id="shedToggle" name="shedToggle" onchange="toggleShedFields()">
-                                <option value="none" th:selected="${order.shedLength == 0 or order.shedWidth == 0}">Uden
-                                    redskabsrum
-                                </option>
-                                <option value="with" th:selected="${order.shedLength > 0 and order.shedWidth > 0}">Med
-                                    redskabsrum
-                                </option>
-                            </select>
-                        </label>
-                        <div id="shedFields" class="form-subsection" style="display: none;">
-                            <label>Redskabsrum bredde
-                                <input type="number" name="shedWidth" th:value="${order.shedWidth}"
-                                       placeholder="Angiv bredde i cm"/>
-                            </label>
-                            <label>Redskabsrum længde
-                                <input type="number" name="shedLength" th:value="${order.shedLength}"
-                                       placeholder="Angiv længde i cm"/>
-                            </label>
+                        <div class="carport-and-sketch">
+                            <div class="carport-form">
+                                <h2>Carport</h2>
+                                <label>Carport bredde
+                                    <input type="number" name="carportWidth" th:value="${order.carportWidth}" required/>
+                                </label>
+                                <label>Carport længde
+                                    <input type="number" name="carportLength" th:value="${order.carportLength}"
+                                           required/>
+                                </label>
+                                <label>Carport højde
+                                    <input type="number" name="carportHeight" th:value="${order.carportHeight}"
+                                           required/>
+                                </label>
+
+                                <!-- Shed Section -->
+                                <div class="form-section">
+                                    <h2>Skur</h2>
+                                    <label>Redskabsrum
+                                        <select id="shedToggle" name="shedToggle" onchange="toggleShedFields()">
+                                            <option value="none"
+                                                    th:selected="${order.shedLength == 0 or order.shedWidth == 0}">
+                                                Uden
+                                                redskabsrum
+                                            </option>
+                                            <option value="with"
+                                                    th:selected="${order.shedLength > 0 and order.shedWidth > 0}">
+                                                Med
+                                                redskabsrum
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <div id="shedFields" class="form-subsection" style="display: none;">
+                                        <label>Redskabsrum bredde
+                                            <input type="number" name="shedWidth" th:value="${order.shedWidth}"
+                                                   placeholder="Angiv bredde i cm"/>
+                                        </label>
+                                        <label>Redskabsrum længde
+                                            <input type="number" name="shedLength" th:value="${order.shedLength}"
+                                                   placeholder="Angiv længde i cm"/>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sketch section -->
+                            <div class="sketch-section">
+                                <h2>Skitse</h2>
+                                <button type="button" onclick="updateSketch()">
+                                    Opdater skitse
+                                    <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}"
+                                         alt="Ikon"
+                                         style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                                </button>
+                            <h4>Carporten set ovenfra med spær</h4>
+                            <div class="carport-svg-topview">
+                                <div th:utext="${svg}"></div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Sketch section -->
-                    <div class="sketch-section">
-                        <h2>Skitse</h2>
-                        <button type="button" onclick="updateSketch()">
-                            Opdater skitse
-                            <img src="../public/images/update_icon.png" th:src="@{/images/update_icon.png}" alt="Ikon"
-                                 style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
-                        </button>
-                        <h3>Carporten set ovenfra med spær</h3>
-                        <div class="carport-svg-topview">
-                            <div th:utext="${svg}"></div>
-                        </div>
-                    </div>
-
                     <!-- Material list -->
                     <div class="material-list-section">
-                        <h2>Materialeliste</h2>
-                        <table class="material-table">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Navn</th>
-                                <th>Længde</th>
-                                <th>Bredde</th>
-                                <th>Højde</th>
-                                <th>Enhed</th>
-                                <th>Antal</th>
-                                <th>Pris</th>
-                                <th>Beskrivelse</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="orderline : ${orderlines}">
-                                <td th:text="${orderline.variant.material.materialId}"></td>
-                                <td th:text="${orderline.variant.material.name}"></td>
-                                <td th:text="${orderline.variant.length} + ' cm'"></td>
-                                <td th:text="${orderline.variant.material.width} + ' mm'"></td>
-                                <td th:text="${orderline.variant.material.height} + ' mm'"></td>
-                                <td th:text="${orderline.variant.material.unit}"></td>
-                                <td th:text="${orderline.quantity}"></td>
-                                <td th:text="${#numbers.formatDecimal(orderline.orderlinePrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"></td>
-                                <td th:text="${orderline.buildDescription}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                            <h2>Materialeliste</h2>
+                            <table class="material-table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Navn</th>
+                                    <th>Længde</th>
+                                    <th>Bredde</th>
+                                    <th>Højde</th>
+                                    <th>Enhed</th>
+                                    <th>Antal</th>
+                                    <th>Pris</th>
+                                    <th>Beskrivelse</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="orderline : ${orderlines}">
+                                    <td th:text="${orderline.variant.material.materialId}"></td>
+                                    <td th:text="${orderline.variant.material.name}"></td>
+                                    <td th:text="${orderline.variant.length} + ' cm'"></td>
+                                    <td th:text="${orderline.variant.material.width} + ' mm'"></td>
+                                    <td th:text="${orderline.variant.material.height} + ' mm'"></td>
+                                    <td th:text="${orderline.variant.material.unit}"></td>
+                                    <td th:text="${orderline.quantity}"></td>
+                                    <td th:text="${#numbers.formatDecimal(orderline.orderlinePrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"></td>
+                                    <td th:text="${orderline.buildDescription}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <!--Price section -->
-                    <div class="price-section">
-                        <p>Vejledende pris: <span
-                                th:text="${#numbers.formatDecimal(order.price, 0, 'COMMA', 2, 'POINT')} + ' kr'">0000 kr</span>
-                        </p>
-                        <input type="hidden" name="orderId" th:value="${order.orderId}"/>
+                        <!--Price section -->
+                        <div class="price-section-order-details">
+                            <p>Vejledende pris:
+                                <span th:text="${#numbers.formatDecimal(order.price, 0, 'POINT', 2, 'COMMA')} + ' kr'">0 kr</span>
+                            </p>
+                            <input type="hidden" name="orderId" th:value="${order.orderId}"/>
 
-                        <label for="orderPrice">Endelig pris:</label>
-                        <input type="number" id="orderPrice" name="orderPrice" th:value="${order.price}" required/>
+                            <p><strong>Endelig pris:
+                                <input type="number" id="orderPrice" name="orderPrice" th:value="${order.price}"
+                                       required/>
+                                kr </strong></p>
+                            <!-- Material cost -->
+                            <input type="hidden" name="costPrice" th:value="${order.costPrice}"/>
 
-                        <!-- Material cost -->
-                        <label>Pris på materialer:
-                            <input type="text" id="costPriceDisplay"
-                                   th:value="${#numbers.formatDecimal(order.costPrice, 0, 'COMMA', 2, 'POINT')} + ' kr'"
-                                   readonly/>
-                        </label>
-                        <input type="hidden" name="costPrice" th:value="${order.costPrice}"/>
+                            <div class="price-and-calc-row">
+                                <p>Pris på materialer:
+                                    <span id="costPriceDisplay"
+                                          th:text="${#numbers.formatDecimal(order.costPrice, 0, 'POINT', 2, 'COMMA')} + ' kr'">0 kr</span>
+                                </p>
+                                <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
+                                <p>Dækningsgrad: <span id="marginDisplay">0%</span></p>
+                            </div>
 
-                        <!-- Calculator -->
-                        <p>Dækningsbidrag: <span id="profitDisplay">0 kr</span></p>
-                        <p>Dækningsgrad: <span id="marginDisplay">0%</span></p>
+                            <!-- Save button -->
+                            <button type="submit">Gem ændringerne
+                                <img src="../public/images/save_icon.png" th:src="@{/images/save_icon.png}" alt="Ikon"
+                                     style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
+                            </button>
 
-                        <!-- Save button -->
-                        <button type="submit">Gem ændringerne
-                            <img src="../public/images/save_icon.png" th:src="@{/images/save_icon.png}" alt="Ikon"
-                                 style="height: 20px; width: 20px; vertical-align: middle; margin-left: 8px;">
-                        </button>
-
-                        <a th:href="@{/admin/ordre/preview/{id}(id=${order.orderId})}" class="button">
-                            Vis endelig ordre og send til kunden →
+                            <a th:href="@{/admin/ordre/preview/{id}(id=${order.orderId})}" class="button">
+                                Vis endelig ordre og send til kunden →
                         </a>
                     </div>
                 </div>
@@ -249,7 +274,7 @@
         </section>
     </div>
 </main>
-
+</div>
 <footer>
     <div class="container footer-container">
         <p>Johannes Fog A/S</p>
