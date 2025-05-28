@@ -28,19 +28,19 @@ public class Main {
             config.fileRenderer(new JavalinThymeleaf(ThymeleafConfig.templateEngine()));
         });
 
-        // Auto-login as admin when developing
-        if (System.getenv("DEPLOYED") == null) {
-            app.before("/admin/*", ctx -> {
-                if (ctx.sessionAttribute("currentUser") == null) {
-                    Salesperson dummy = new Salesperson();
-                    dummy.setSalespersonId(1); // eksisterende eller dummy ID
-                    dummy.setName("Test Admin");
-                    dummy.setEmail("admin@fog.dk");
-                    dummy.setAdmin(true);
-                    ctx.sessionAttribute("currentUser", dummy);
-                }
-            });
-        }
+//        // Auto-login as admin when developing
+//        if (System.getenv("DEPLOYED") == null) {
+//            app.before("/admin/*", ctx -> {
+//                if (ctx.sessionAttribute("currentUser") == null) {
+//                    Salesperson dummy = new Salesperson();
+//                    dummy.setSalespersonId(1); // eksisterende eller dummy ID
+//                    dummy.setName("Test Admin");
+//                    dummy.setEmail("admin@fog.dk");
+//                    dummy.setAdmin(true);
+//                    ctx.sessionAttribute("currentUser", dummy);
+//                }
+//            });
+//        }
 
         // Add routes
         OrderController orderController = new OrderController(connectionPool);
@@ -50,6 +50,6 @@ public class Main {
         MaterialController.addRoutes(app, connectionPool);
 
         // Start server
-        app.start(7070);
+        app.start(7071);
     }
 }
