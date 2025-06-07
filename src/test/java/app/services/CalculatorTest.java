@@ -24,7 +24,6 @@ class CalculatorTest
     private static final String DB = "fog";
     private static final int BEAMS = 5;
 
-
     private static final ConnectionPool connectionPool = ConnectionPool.getInstance(USER, PASSWORD, URL, DB);
     private static final MaterialMapper materialMapper = new MaterialMapper(connectionPool);
 

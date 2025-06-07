@@ -144,7 +144,7 @@ public class OrderController {
                     carport.setShedLength(shedLength);
                 }
             }
-            // Save carport to database
+            // Save carport and find roof type to database
             carportMapper.saveCarport(carport);
 
             // Create and save order

@@ -11,8 +11,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MaterialMapper
-{
+public class MaterialMapper {
 
     private final ConnectionPool connectionPool;
 
@@ -20,8 +19,7 @@ public class MaterialMapper
         this.connectionPool = connectionPool;
     }
 
-    public List<Variant> getMaterialVariantsByMaterialIdAndMinLength(int minLength, int materialId, ConnectionPool connectionPool) throws DatabaseException
-    {
+    public List<Variant> getMaterialVariantsByMaterialIdAndMinLength(int minLength, int materialId, ConnectionPool connectionPool) throws DatabaseException {
         List<Variant> variants = new ArrayList<>();
         String sql = "SELECT * FROM variant " +
                      "INNER JOIN material USING (material_id) " +

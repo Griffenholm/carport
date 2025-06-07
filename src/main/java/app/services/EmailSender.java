@@ -11,6 +11,7 @@ public class EmailSender {
     public EmailSender() {
         this.emailSender = new GmailEmailSenderHTML();
     }
+
     public void sendOrderConfirmationEmail(Order order) throws MessagingException {
         try {
             GmailEmailSenderHTML emailSender = new GmailEmailSenderHTML();

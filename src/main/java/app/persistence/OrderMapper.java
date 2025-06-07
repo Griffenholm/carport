@@ -26,7 +26,7 @@ public class OrderMapper {
 
     public void saveOrder(Order order) throws SQLException {
         String sql = """
-                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, cost_price, salesperson_id, svg, order_date) 
+                INSERT INTO orders (customer_number, carport_height, carport_width, carport_length, shed_width, shed_length, status, order_price, cost_price, salesperson_id, svg, order_date)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 

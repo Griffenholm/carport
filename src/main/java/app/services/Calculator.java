@@ -43,7 +43,7 @@ public class Calculator {
     }
 
     public int calcPostQuantity() {
-        return 4 + (2 * ((length - 300) / 300));
+        return 4 + (2 * ((length - 300) / 300)); // Amount of posts: 4 = one for each corner + 2 for each extra 3 m
     }
 
     //Remme
